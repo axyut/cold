@@ -51,12 +51,23 @@ const usage = `
 usage - $playgo <file.mp3> <file2.mp3>
       - $playgo .
 ## while playing
-q - quit player
-h - play previous song
-j - seek backward 10s
-k - seek forward 10s
-l - play next song
-  `
+  q - quit player
+  p - Play/Pause
+
+  h - play previous song
+  j - seek backward 10s
+  k - seek forward 10s
+  l - play next song
+
+  w - Increase Volume by 5%
+  a - 
+  s - Decrease Volume by 5%
+  d -
+
+  e - Toogle Repeat Playlist On/Off
+  r - Toogle Repeat Song On/Off
+  t - Toogle Shuffle On/Off
+`
 
 type Flag struct {
 	Help string

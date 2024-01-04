@@ -61,11 +61,9 @@ func border() {
 }
 func (p *Player) display() {
 	// border()
-	// for loop ?  and Sleep
-	// var timer int
-	// for {
-	// timer++
 	maxX, maxY := termSize()
+
+	// Playlist
 	moveCursor(pos{3, 1})
 	fmt.Fprintf(screen, "PLAYLIST (%d songs)", len(playlist))
 	for i, v := range playlist {
@@ -81,16 +79,28 @@ func (p *Player) display() {
 		fmt.Fprintf(screen, "%d. %s", i+1, stripped)
 	}
 
-	moveCursor(pos{2, int(float32(maxY)/1.25) - 1})
+	// Settings
+	intH := int(float32(maxY) / 1.25)
+	moveCursor(pos{2, intH - 1})
 	fmt.Fprintf(screen, "SETTINGS")
+	moveCursor(pos{3, intH})
+	fmt.Fprintf(screen, "Shuffle: %t", UserSetting.Shuffle)
+	moveCursor(pos{3, intH + 1})
+	fmt.Fprintf(screen, "Repeat Song: %t", UserSetting.RepeatSong)
+	moveCursor((pos{3, intH + 2}))
+	fmt.Fprintf(screen, "Repeat playlist: %t", UserSetting.RepeatPlaylist)
 
+	// Now Playing
 	moveCursor(pos{maxX / 2, 1})
 	fmt.Fprintf(screen, "NOW PLAYING")
 	moveCursor(pos{maxX / 2, 3})
 	fmt.Fprintf(screen, "%s", stripString(p.File.Name()))
 	moveCursor(pos{maxX / 2, 4})
-	fmt.Fprintf(screen, "Length: %d ---------------- %d seconds", timer, p.MP3.Length()/60/60/60)
+	fmt.Fprintf(screen, "Length: %d -------------------- %d seconds", timer, p.MP3.Length()/60/60/60)
+	// song info
+	// seek info
 
+	// Next / Prev Song
 	moveCursor(pos{maxX / 2, maxY / 4})
 	fmt.Fprintf(screen, "NEXT SONG")
 	moveCursor(pos{maxX / 2, (maxY / 4) + 1})
@@ -104,14 +114,10 @@ func (p *Player) display() {
 			break
 		}
 		moveCursor(pos{maxX / 2, int(float32(maxY)/1.25) + i})
-		fmt.Fprintf(screen, " %d. %s", i+1, v)
-
+		fmt.Fprintf(screen, " %s", stripString(v))
 	}
 
 	render()
-	// time.Sleep(time.Second)
-	// break
-	// }
 }
 
 func displayStats() {

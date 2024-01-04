@@ -30,6 +30,8 @@ top:
 		}
 		player.File.Close()
 		playedList = appendOnlyOriginal(playedList, playlist[song])
+		played := fmt.Sprintf("Played %s", playlist[song])
+		notify(played)
 		if len(playedList) == len(playlist) {
 			break
 		}
@@ -103,6 +105,48 @@ func (p *Player) listenForKey() {
 				notify("++ VOL")
 			case 's': // volume down
 				notify("-- VOL")
+			case 't': // shuffle
+				var suf bool
+				if UserSetting.Shuffle {
+					suf = false
+					notify("Shuffle Toogle Off.")
+				} else {
+					suf = true
+					notify("Shuffle Toogle On")
+				}
+				UserSetting = Setting{
+					suf,
+					UserSetting.RepeatSong,
+					UserSetting.RepeatPlaylist,
+				}
+			case 'e': // repeat playlist
+				var rep bool
+				if UserSetting.RepeatPlaylist {
+					rep = false
+					notify("Repeat Playlist Toogle Off.")
+				} else {
+					rep = true
+					notify("Repeat Playlist Toogle On.")
+				}
+				UserSetting = Setting{
+					UserSetting.Shuffle,
+					UserSetting.RepeatSong,
+					rep,
+				}
+			case 'r': // repeat Song
+				var repS bool
+				if UserSetting.RepeatSong {
+					repS = false
+					notify("Repeat Song Toogle Off.")
+				} else {
+					repS = true
+					notify("Repeat Song Toogle On.")
+				}
+				UserSetting = Setting{
+					UserSetting.Shuffle,
+					repS,
+					UserSetting.RepeatPlaylist,
+				}
 			case 'q':
 				displayStats()
 			}
