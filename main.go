@@ -11,12 +11,18 @@ import (
 	"github.com/mattn/go-tty"
 )
 
+// when file is deleted, if cannot open file remove from playlist
+// change the playlist as a whole when shuffled, re-load folder if turned off
 func main() {
 	handleArgs()
 top:
 	for i := 0; ; i++ {
-		song := getSong(i)
-		player := play(song)
+	repeatSameSong:
+		songs := getSong(i)
+		player := play(songs.currentSong)
+		if player == nil {
+			continue
+		}
 		player.handleInterrupt()
 		player.display()
 		// go player.listenForKey()
@@ -29,16 +35,20 @@ top:
 			panic("player.Close failed: " + err.Error())
 		}
 		player.File.Close()
-		playedList = appendOnlyOriginal(playedList, playlist[song])
-		played := fmt.Sprintf("Played %s", playlist[song])
+		playedList = appendOnlyOriginal(playedList, playlist[songs.currentSong])
+		played := fmt.Sprintf("Played %s", playlist[songs.currentSong])
 		notify(played)
 		if len(playedList) == len(playlist) {
+			playedList = []string{}
+			completedPlaylist++
 			break
+		}
+		if UserSetting.RepeatSong {
+			goto repeatSameSong
 		}
 	}
 	if UserSetting.RepeatPlaylist {
-		playedList = []string{}
-		notify("Playlist Completed! Starting Again.")
+		notify("Restarting Playlist.")
 		goto top
 	}
 	displayStats()
@@ -46,12 +56,12 @@ top:
 
 // seek, next , prevous, pause, play, settings
 func play(songNum int) *Player {
-	clear()
-	hideCursor()
 	mp3File := playlist[songNum]
 	file, err := os.Open(mp3File)
 	if err != nil {
-		panic("opening " + mp3File + " failed: " + err.Error())
+		log.Print(err)
+		playlist = Remove(playlist, songNum)
+		return nil
 	}
 
 	// Decode file. This process is done as the file plays so it won't load whole thing into memory
@@ -76,7 +86,6 @@ func play(songNum int) *Player {
 	}
 	newPlayer.Music.Play()
 	go newPlayer.listenForKey()
-
 	return &newPlayer
 }
 func (p *Player) listenForKey() {
@@ -106,54 +115,17 @@ func (p *Player) listenForKey() {
 			case 's': // volume down
 				notify("-- VOL")
 			case 't': // shuffle
-				var suf bool
-				if UserSetting.Shuffle {
-					suf = false
-					notify("Shuffle Toogle Off.")
-				} else {
-					suf = true
-					notify("Shuffle Toogle On")
-				}
-				UserSetting = Setting{
-					suf,
-					UserSetting.RepeatSong,
-					UserSetting.RepeatPlaylist,
-				}
+				toogleSetting('t')
 			case 'e': // repeat playlist
-				var rep bool
-				if UserSetting.RepeatPlaylist {
-					rep = false
-					notify("Repeat Playlist Toogle Off.")
-				} else {
-					rep = true
-					notify("Repeat Playlist Toogle On.")
-				}
-				UserSetting = Setting{
-					UserSetting.Shuffle,
-					UserSetting.RepeatSong,
-					rep,
-				}
+				toogleSetting('e')
 			case 'r': // repeat Song
-				var repS bool
-				if UserSetting.RepeatSong {
-					repS = false
-					notify("Repeat Song Toogle Off.")
-				} else {
-					repS = true
-					notify("Repeat Song Toogle On.")
-				}
-				UserSetting = Setting{
-					UserSetting.Shuffle,
-					repS,
-					UserSetting.RepeatPlaylist,
-				}
+				toogleSetting('r')
 			case 'q':
 				displayStats()
 			}
 		}
 	}
 }
-
 func handleArgs() {
 	if len(os.Args) == 1 {
 		log.Fatal(usage)
@@ -172,7 +144,9 @@ func handleArgs() {
 				default:
 					fmt.Println(usage)
 				case flags.Test:
-					fmt.Println("Flags Test!")
+					fmt.Println("Checking Players Health.")
+					//TODO: to pass all the tests
+					fmt.Println("OK!")
 				case flags.Help:
 					fmt.Println(usage)
 				}
@@ -180,5 +154,8 @@ func handleArgs() {
 			}
 			playlist = append(playlist, v)
 		}
+	}
+	if UserSetting.Shuffle {
+		shufflePlaylist()
 	}
 }

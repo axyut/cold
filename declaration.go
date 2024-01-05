@@ -19,6 +19,7 @@ var playedList []string
 var favorites []string
 var notifications []string
 var timer int
+var completedPlaylist int
 
 type pos [2]int
 
@@ -43,13 +44,26 @@ type Setting struct {
 
 var UserSetting = Setting{
 	true,
-	false, // if Shuffle false it's no use for RepeatSong tobe true
+	false, // if Shuffle false it's no use for RepeatSong to be true
 	true,
 }
 
-const usage = `
-usage - $playgo <file.mp3> <file2.mp3>
-      - $playgo .
+type Activelist struct {
+	prevSong    int
+	currentSong int
+	nextSong    int
+}
+
+var songs = Activelist{
+	-1, 0, 1,
+}
+
+const usage = `Usage
+## flags
+  play files                  - $playgo <file.mp3> <file2.mp3>
+  play all music in folder    - $playgo .
+  help                        - $playgo -h
+  test condition/health       - $playgo -t
 ## while playing
   q - quit player
   p - Play/Pause

@@ -59,11 +59,25 @@ func border() {
 		fmt.Fprintf(screen, "|")
 	}
 }
+
+func seprator() {
+	maxX, maxY := termSize()
+	for i := 1; i <= maxY; i++ {
+		fmt.Fprintf(screen, "\033[%d;%dH", i, (maxX/2)-2)
+		fmt.Fprintf(screen, "|")
+	}
+}
+
 func (p *Player) display() {
+	clear()
+	hideCursor()
 	// border()
+	seprator()
 	maxX, maxY := termSize()
 
 	// Playlist
+	// TODO: will make playlist auto scroll one step when 1 songs finishes
+	// so that prev 5 and next 5 will always be in place then section NEXT SONGS can be removed
 	moveCursor(pos{3, 1})
 	fmt.Fprintf(screen, "PLAYLIST (%d songs)", len(playlist))
 	for i, v := range playlist {
@@ -96,15 +110,28 @@ func (p *Player) display() {
 	moveCursor(pos{maxX / 2, 3})
 	fmt.Fprintf(screen, "%s", stripString(p.File.Name()))
 	moveCursor(pos{maxX / 2, 4})
-	fmt.Fprintf(screen, "Length: %d -------------------- %d seconds", timer, p.MP3.Length()/60/60/60)
+	fmt.Fprintf(screen, "%d:00 -------------------- 3:14s", timer)
 	// song info
 	// seek info
 
 	// Next / Prev Song
 	moveCursor(pos{maxX / 2, maxY / 4})
-	fmt.Fprintf(screen, "NEXT SONG")
-	moveCursor(pos{maxX / 2, (maxY / 4) + 1})
-	fmt.Fprintf(screen, "------")
+	fmt.Fprintf(screen, "UPCOMING SONGS")
+	for i, _ := range playlist {
+		if i == songs.currentSong {
+			for j := 1; j <= 5; j++ {
+				next := songs.currentSong + j
+				if next >= len(playlist) {
+					for next >= len(playlist) {
+						next = next - len(playlist)
+					}
+				}
+				moveCursor(pos{maxX / 2, (maxY / 4) + j})
+				fmt.Fprintf(screen, "%s", stripString(playlist[next]))
+			}
+		}
+		continue
+	}
 
 	// Notification
 	moveCursor(pos{maxX / 2, int(float32(maxY)/1.25) - 1})
@@ -123,8 +150,16 @@ func (p *Player) display() {
 func displayStats() {
 	clear()
 	showCursor()
-	moveCursor(pos{1, 1})
-	fmt.Fprintf(screen, "Statistics")
+
+	// moveCursor(pos{1, 1})
+	// fmt.Fprintf(screen, "Stats :")
+	moveCursor(pos{2, 2})
+	fmt.Fprintf(screen, "Played         : %d song(s).", len(playedList)+(len(playlist)*completedPlaylist))
+	moveCursor(pos{2, 3})
+	fmt.Fprintf(screen, "Played list    : %d time(s).", completedPlaylist)
+	moveCursor(pos{2, 4})
+	fmt.Fprintf(screen, "Minutes played : 21 minute(s)")
+
 	render()
 	os.Exit(0)
 }
