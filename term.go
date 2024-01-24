@@ -68,6 +68,131 @@ func seprator() {
 	}
 }
 
+func resetColor() {
+	fmt.Fprintf(screen, "\u001b[0m")
+}
+
+type Color struct {
+	Black     func(...string)
+	Red       func(...string)
+	Green     func(...string)
+	Yellow    func(...string)
+	Blue      func(...string)
+	Magenta   func(...string)
+	Cyan      func(...string)
+	White     func(...string)
+	BgBlack   func(...string)
+	BgRed     func(...string)
+	BgGreen   func(...string)
+	BgYellow  func(...string)
+	BgBlue    func(...string)
+	BgMagenta func(...string)
+	BgCyan    func(...string)
+	Bold      func(...string)
+	Underline func(...string)
+	Reversed  func(...string)
+	Reset     func()
+}
+
+// Bold: \u001b[1m
+// Underline: \u001b[4m
+// Reversed: \u001b[7m
+//
+// Background Black: \u001b[40m
+// Background Red: \u001b[41m
+// Background Green: \u001b[42m
+// Background Yellow: \u001b[43m
+// Background Blue: \u001b[44m
+// Background Magenta: \u001b[45m
+// Background Cyan: \u001b[46m
+// Background White: \u001b[47m
+
+var color = Color{
+	Black: func(text ...string) {
+		if len(text) > 0 {
+			for i := 0; i < len(text); i++ {
+				fmt.Fprintf(screen, "\u001b[30m%s", text[i])
+			}
+			fmt.Fprintf(screen, "\u001b[0m")
+		} else {
+			fmt.Fprintf(screen, "\u001b[30m")
+		}
+	},
+	Red: func(text ...string) {
+		if len(text) > 0 {
+			for i := 0; i < len(text); i++ {
+				fmt.Fprintf(screen, "\u001b[31m%s", text[i])
+			}
+			fmt.Fprintf(screen, "\u001b[0m")
+		} else {
+			fmt.Fprintf(screen, "\u001b[31m")
+		}
+	},
+	Green: func(text ...string) {
+		if len(text) > 0 {
+			for i := 0; i < len(text); i++ {
+				fmt.Fprintf(screen, "\u001b[32m%s", text[i])
+			}
+			fmt.Fprintf(screen, "\u001b[0m")
+		} else {
+			fmt.Fprintf(screen, "\u001b[32m")
+		}
+	},
+	Yellow: func(text ...string) {
+		if len(text) > 0 {
+			for i := 0; i < len(text); i++ {
+				fmt.Fprintf(screen, "\u001b[33m%s", text[i])
+			}
+			fmt.Fprintf(screen, "\u001b[0m")
+		} else {
+			fmt.Fprintf(screen, "\u001b[33m")
+		}
+	},
+	Blue: func(text ...string) {
+		if len(text) > 0 {
+			for i := 0; i < len(text); i++ {
+				fmt.Fprintf(screen, "\u001b[34m%s", text[i])
+			}
+			fmt.Fprintf(screen, "\u001b[0m")
+		} else {
+			fmt.Fprintf(screen, "\u001b[34m")
+		}
+	},
+	Magenta: func(text ...string) {
+		if len(text) > 0 {
+			for i := 0; i < len(text); i++ {
+				fmt.Fprintf(screen, "\u001b[35m%s", text[i])
+			}
+			fmt.Fprintf(screen, "\u001b[0m")
+		} else {
+			fmt.Fprintf(screen, "\u001b[35m")
+		}
+	},
+	Cyan: func(text ...string) {
+		if len(text) > 0 {
+			for i := 0; i < len(text); i++ {
+				fmt.Fprintf(screen, "\u001b[36m%s", text[i])
+			}
+			fmt.Fprintf(screen, "\u001b[0m")
+		} else {
+			fmt.Fprintf(screen, "\u001b[36m")
+		}
+	},
+	White: func(text ...string) {
+		if len(text) > 0 {
+			for i := 0; i < len(text); i++ {
+				fmt.Fprintf(screen, "\u001b[37m%s", text[i])
+			}
+			fmt.Fprintf(screen, "\u001b[0m")
+		} else {
+			fmt.Fprintf(screen, "\u001b[37m")
+		}
+	},
+	Reset: func() {
+		fmt.Fprintf(screen, "\u001b[0m")
+	},
+}
+
 func (p *Player) display() {
 	clear()
 	hideCursor()
@@ -76,21 +201,54 @@ func (p *Player) display() {
 	maxX, maxY := termSize()
 
 	// Playlist
-	// TODO: will make playlist auto scroll one step when 1 songs finishes
-	// so that prev 5 and next 5 will always be in place then section NEXT SONGS can be removed
+	// TODO: will make playlist scrollable with cursor later on
+
+	// will later implement this to show all playlist when certain key pressed.
 	moveCursor(pos{3, 1})
 	fmt.Fprintf(screen, "PLAYLIST (%d songs)", len(playlist))
-	for i, v := range playlist {
-		stripped := stripString(v)
-		if i > maxY/(3) {
-			moveCursor(pos{2, i + 3})
-			fmt.Fprintf(screen, "  %d more Songs...", len(playlist)-i)
-			moveCursor(pos{2, i + 4})
-			fmt.Fprintf(screen, "%d. %s", len(playlist), stripString(playlist[len(playlist)-1]))
-			break
+	// for i, v := range playlist {
+	// 	stripped := stripString(v)
+	// 	if i > maxY/(3) {
+	// 		moveCursor(pos{2, i + 3})
+	// 		fmt.Fprintf(screen, "  %d more Songs...", len(playlist)-i)
+	// 		moveCursor(pos{2, i + 4})
+	// 		fmt.Fprintf(screen, "%d. %s", len(playlist), stripString(playlist[len(playlist)-1]))
+	// 		break
+	// 	}
+	// 	moveCursor(pos{2, i + 3})
+	// 	fmt.Fprintf(screen, "%d. %s", i+1, stripped)
+	// }
+
+	// 1. iterate playedList? start currentSong from top and move down as playedList increases upto ~5 prev songs
+	// 2. iterate playlist? start at constant row and provide what would be last ~5 songs then gradually add playedList
+	// prev songs, idk which option better, now implementing 2.
+	totalPrevSongs := 3
+	for i := 1; i <= totalPrevSongs; i++ {
+		prev := songs.currentSong - i
+		if prev <= -1 {
+			for prev <= -1 {
+				prev = prev + len(playlist)
+			}
 		}
-		moveCursor(pos{2, i + 3})
-		fmt.Fprintf(screen, "%d. %s", i+1, stripped)
+		moveCursor(pos{2, (maxY / 4) - i})
+		color.Magenta(fmt.Sprintf("%s", stripString(playlist[prev])))
+	}
+
+	// currently Playing
+	moveCursor(pos{2, maxY / 4})
+	color.Cyan(fmt.Sprintf("⏯️%s", stripString(playlist[songs.currentSong])))
+
+	// next songs
+	totalNextSongs := 6
+	for j := 1; j <= totalNextSongs; j++ {
+		next := songs.currentSong + j
+		if next >= len(playlist) {
+			for next >= len(playlist) {
+				next = next - len(playlist)
+			}
+		}
+		moveCursor(pos{2, (maxY / 4) + j})
+		color.Blue(fmt.Sprintf("%s", stripString(playlist[next])))
 	}
 
 	// Settings
@@ -113,25 +271,6 @@ func (p *Player) display() {
 	fmt.Fprintf(screen, "%d:00 -------------------- 3:14s", timer)
 	// song info
 	// seek info
-
-	// Next / Prev Song
-	moveCursor(pos{maxX / 2, maxY / 4})
-	fmt.Fprintf(screen, "UPCOMING SONGS")
-	for i, _ := range playlist {
-		if i == songs.currentSong {
-			for j := 1; j <= 5; j++ {
-				next := songs.currentSong + j
-				if next >= len(playlist) {
-					for next >= len(playlist) {
-						next = next - len(playlist)
-					}
-				}
-				moveCursor(pos{maxX / 2, (maxY / 4) + j})
-				fmt.Fprintf(screen, "%s", stripString(playlist[next]))
-			}
-		}
-		continue
-	}
 
 	// Notification
 	moveCursor(pos{maxX / 2, int(float32(maxY)/1.25) - 1})
