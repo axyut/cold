@@ -1,4 +1,4 @@
-module gitub.com/axyut/playgo
+module github.com/axyut/playgo
 
 go 1.21.5
 
