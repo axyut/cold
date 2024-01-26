@@ -98,3 +98,8 @@ setting:
 theme:
   raw: true
 ```
+
+<!-- imp
+[project structure](https://github.com/golang-standards/project-layout/blob/master/test/README.md)
+setup go build command with test mp3 files
+-->

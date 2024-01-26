@@ -1,0 +1,10 @@
+setting:
+  general:
+    show_icons: true
+  player:
+    shuffle: true
+    repeat_playlist: true
+  music:
+    repeat_song: false
+theme:
+  raw: true

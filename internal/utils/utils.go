@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"fmt"
@@ -8,18 +8,25 @@ import (
 	"os/signal"
 	"path/filepath"
 	"strings"
+
+	"github.com/axyut/playgo/cmd"
+	"github.com/axyut/playgo/internal/utils"
 )
 
-func shufflePlaylist() {
+var playlist = cmd.Playlist
+	"fmt"
+var usage = L
+
+func ShufflePlaylist() {
 	rand.Shuffle(len(playlist), func(i, j int) {
 		playlist[i], playlist[j] = playlist[j], playlist[i]
 	})
 }
-func serializePlaylist() {
+func SerializePlaylist() {
 	// just doing addFolder for now which doesn't cover when individual files opened in command $playgo a.mp3 b.mp3
-	addFolder()
+	AddFolder()
 }
-func addFolder() {
+func AddFolder() {
 	playlist = []string{}
 	fileInfos, err := os.ReadDir(".")
 	if err != nil {
@@ -40,8 +47,8 @@ func addFolder() {
 func Remove(slice []string, s int) []string {
 	return append(slice[:s], slice[s+1:]...)
 }
-func (player *Player) handleInterrupt() {
-	hideCursor()
+func (player *Player) HandleInterrupt() {
+	HideCursor()
 
 	// handle CTRL C
 	c := make(chan os.Signal, 1)
@@ -49,11 +56,11 @@ func (player *Player) handleInterrupt() {
 
 	go func() {
 		for range c {
-			displayStats()
+			DisplayStats()
 		}
 	}()
 }
-func toogleSetting(str rune) {
+func ToogleSetting(str rune) {
 	suf, repS, repP := UserSetting.Shuffle, UserSetting.RepeatSong, UserSetting.RepeatPlaylist
 	switch str {
 	case 'e':
@@ -64,11 +71,11 @@ func toogleSetting(str rune) {
 		// serialize
 		suf = !suf
 		if suf {
-			shufflePlaylist()
-			notify("Shuffle On.")
+			ShufflePlaylist()
+			Notify("Shuffle On.")
 		} else {
-			serializePlaylist()
-			notify("Shuffle Off.")
+			SerializePlaylist()
+			Notify("Shuffle Off.")
 		}
 	}
 	UserSetting = Setting{
@@ -91,7 +98,7 @@ func toogleSetting(str rune) {
 // 	return songNum
 // }
 
-func inPlaylist(songNum int) bool {
+func InPlaylist(songNum int) bool {
 	for _, v := range playedList {
 		if playlist[songNum] == v {
 			return true
@@ -100,11 +107,11 @@ func inPlaylist(songNum int) bool {
 	return false
 }
 
-func notify(str string) {
+func Notify(str string) {
 	notifications = append([]string{str}, notifications...)
 }
-func stripString(str string) string {
-	maxX, _ := termSize()
+func StripString(str string) string {
+	maxX, _ := TermSize()
 	strip := maxX / 3
 	len := len(str)
 	if isMp3 := strings.ContainsAny(str, "mp3"); isMp3 {
@@ -117,7 +124,7 @@ func stripString(str string) string {
 	return str
 }
 
-func getSong(i int) Activelist {
+func GetSong(i int) Activelist {
 	var prevSong, curSong, nextSong int
 	prevSong = i - 1
 	curSong = i
@@ -135,7 +142,7 @@ func getSong(i int) Activelist {
 	return songs
 }
 
-func appendOnlyOriginal(list []string, val string) (originalList []string) {
+func AppendOnlyOriginal(list []string, val string) (originalList []string) {
 	for _, v := range list {
 		if v == val {
 			return list
