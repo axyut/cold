@@ -2,23 +2,24 @@ package main
 
 import (
 	"fmt"
-	"github.com/axyut/playgo/internal/tui"
-	"github.com/axyut/playgo/internal/utils"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 
 	"github.com/hajimehoshi/go-mp3"
 	"github.com/mattn/go-tty"
-	"log"
-	"os"
-	"strings"
-	"time"
 )
 
+// when file is deleted, if cannot open file remove from playlist
+// change the playlist as a whole when shuffled, re-load folder if turned off
 func main() {
 	handleArgs()
-	top:
+top:
 	for i := 0; ; i++ {
-		repeatSameSong:
-		songs := utils.GetSong(i)
+	repeatSameSong:
+		songs := getSong(i)
 		player := play(songs.currentSong)
 		if player == nil {
 			continue
@@ -35,7 +36,7 @@ func main() {
 			panic("player.Close failed: " + err.Error())
 		}
 		player.File.Close()
-		playedList = utils.appendOnlyOriginal(playedList, playlist[songs.currentSong])
+		playedList = appendOnlyOriginal(playedList, playlist[songs.currentSong])
 		played := fmt.Sprintf("Played %s", playlist[songs.currentSong])
 		notify(played)
 		if len(playedList) == len(playlist) {
@@ -99,40 +100,40 @@ func (p *Player) listenForKey() {
 		if char, err := tty.ReadRune(); err == nil {
 			// str := string(char)
 			switch char {
-				case 'h': // prev Music
-					notify("<< Previous")
-				case 'j': // seek left
-					notify("<< 10s ")
-				case 'k': // seek right
-					notify(">> 10s")
-				case 'l': // next Music
-					notify(">> Next")
-				case 'p': // play/pause
-					notify("|> Paused")
-					notify("|| Playing")
-				case 'w': // volume up
-					notify("++ VOL")
-				case 's': // volume down
-					notify("-- VOL")
-				case 't': // shuffle
-					toogleSetting('t')
-				case 'e': // repeat playlist
-					toogleSetting('e')
-				case 'r': // repeat Song
-					toogleSetting('r')
-				case 'q':
-					displayStats()
+			case 'h': // prev Music
+				notify("<< Previous")
+			case 'j': // seek left
+				notify("<< 10s ")
+			case 'k': // seek right
+				notify(">> 10s")
+			case 'l': // next Music
+				notify(">> Next")
+			case 'p': // play/pause
+				notify("|> Paused")
+				notify("|| Playing")
+			case 'w': // volume up
+				notify("++ VOL")
+			case 's': // volume down
+				notify("-- VOL")
+			case 't': // shuffle
+				toogleSetting('t')
+			case 'e': // repeat playlist
+				toogleSetting('e')
+			case 'r': // repeat Song
+				toogleSetting('r')
+			case 'q':
+				displayStats()
 			}
 		}
 	}
 }
 func handleArgs() {
 	if len(os.Args) == 1 {
-		log.Fatal(tui.Usage)
+		log.Fatal(usage)
 	}
 	// check if it's files or a folder
 	if os.Args[1] == "." {
-		utils.AddFolder()
+		addFolder(".")
 	} else {
 		for i, v := range os.Args {
 			if i == 0 {
@@ -141,18 +142,29 @@ func handleArgs() {
 			if loc := strings.Index(v, "-"); loc == 0 {
 				v = v[1:]
 				switch v {
-					default:
-						fmt.Println(tui.Usage)
-					case flags.Test:
-						fmt.Println("Checking Players Health.")
-						//TODO: to pass all the tests
-						fmt.Println("OK!")
-					case flags.Help:
-						fmt.Println(tui.Usage)
+				default:
+					fmt.Println(usage)
+				case flags.Test:
+					fmt.Println("Checking Players Health.")
+					//TODO: to pass all the tests
+					fmt.Println("OK!")
+				case flags.Help:
+					fmt.Println(usage)
 				}
 				os.Exit(0)
 			}
-			playlist = append(playlist, v)
+			// if loc := strings.Index(v, ".mp3"); loc == -1 {
+			// 	addFolder(v)
+			// 	continue
+			// }
+			file, err := os.Open(v)
+			if err != nil {
+				log.Println(err)
+			}
+			if ext := filepath.Ext(file.Name()); ext == ".mp3" {
+				// path, _ := filepath.Abs(filepath.Dir(file.Name()))
+				playlist = append(playlist, v)
+			}
 		}
 	}
 	if UserSetting.Shuffle {

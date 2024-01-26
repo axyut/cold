@@ -1,9 +1,10 @@
 package main
 
 import (
+	"os"
+
 	"github.com/ebitengine/oto/v3"
 	"github.com/hajimehoshi/go-mp3"
-	"os"
 )
 
 // Prepare an Oto context (creating context for single time)
@@ -13,13 +14,12 @@ var op = &oto.NewContextOptions{
 	Format:       oto.FormatSignedInt16LE,
 }
 var otoCtx, readyChan, otoErr = oto.NewContext(op)
-
-var Playlist []string
-var PlayedList []string
-var Favorites []string
-var Notifications []string
-var Timer int
-var CompletedPlaylist int
+var playlist []string
+var playedList []string
+var favorites []string
+var notifications []string
+var timer int
+var completedPlaylist int
 
 type pos [2]int
 
@@ -54,6 +54,41 @@ type Activelist struct {
 	nextSong    int
 }
 
-var Songs = Activelist{
+var songs = Activelist{
 	-1, 0, 1,
+}
+
+const usage = `Usage
+## flags
+play files                  - $playgo <file.mp3> <file2.mp3>
+play all music in folder    - $playgo .
+help                        - $playgo -h
+test condition/health       - $playgo -t
+## while playing
+q - quit player
+p - Play/Pause
+
+h - play previous song
+j - seek backward 10s
+k - seek forward 10s
+l - play next song
+
+w - Increase Volume by 5%
+a -
+s - Decrease Volume by 5%
+d -
+
+e - Toogle Repeat Playlist On/Off
+r - Toogle Repeat Song On/Off
+t - Toogle Shuffle On/Off
+`
+
+type Flag struct {
+	Help string
+	Test string
+}
+
+var flags = Flag{
+	"h",
+	"t",
 }
