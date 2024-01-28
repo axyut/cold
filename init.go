@@ -61,7 +61,7 @@ var songs = Activelist{
 const usage = `Usage
 ## flags
 play files                  - $playgo <file.mp3> <file2.mp3>
-play all music in folder    - $playgo .
+play all music in folder    - $playgo / $playgo . / $playgo ~/Music/path
 help                        - $playgo -h
 test condition/health       - $playgo -t
 ## while playing

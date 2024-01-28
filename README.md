@@ -40,7 +40,11 @@ curl ...install.sh
 ```
 
 ## Development
-- `go run . .` or `go build . && sudo cp playgo /usr/local/bin/` and `playgo .`
+- `go run . .` from the source
+- `GOOS=linux GOARCH=amd64 go build -o ~/go/bin/ .` build to your bin path.
+- `GOOS=linux GOARCH=amd64 go build . && sudo cp playgo /usr/local/bin/` build for the system.
+  - `GOOS=darwin GOARCH=amd64` Mac
+  - `GOOS=windows GOARCH=amd64` Windows
 
 ## Features
 - Basic Music Player Features (Shuffle, Repeat, Seek etc)
@@ -55,7 +59,7 @@ curl ...install.sh
 ```plaintext
 ## flags
   play files                  - $playgo <file.mp3> <file2.mp3>
-  play all music in folder    - $playgo .
+  play all music in folder    - $playgo / $playgo . / $playgo ~/Music/path
   help                        - $playgo -h
   test condition/health       - $playgo -t
 ## while playing
@@ -98,7 +102,8 @@ setting:
 theme:
   raw: true
 ```
-
+## Uninstalling
+If installed with `go install` remove bin file from your go bin path. If not setup, by default it is in `~/go/bin`, If installed with curl ...
 <!-- imp
 [project structure](https://github.com/golang-standards/project-layout/blob/master/test/README.md)
 setup go build command with test mp3 files

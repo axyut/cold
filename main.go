@@ -129,8 +129,8 @@ func (p *Player) listenForKey() {
 }
 func handleArgs() {
 	if len(os.Args) == 1 {
-		log.Fatal(usage)
-	}
+		addFolder(".")
+	} else
 	// check if it's files or a folder
 	if os.Args[1] == "." {
 		addFolder(".")
@@ -153,16 +153,16 @@ func handleArgs() {
 				}
 				os.Exit(0)
 			}
+			// not mp3 file, then its path
 			// if loc := strings.Index(v, ".mp3"); loc == -1 {
 			// 	addFolder(v)
 			// 	continue
 			// }
 			file, err := os.Open(v)
 			if err != nil {
-				log.Println(err)
+				log.Fatal(err)
 			}
 			if ext := filepath.Ext(file.Name()); ext == ".mp3" {
-				// path, _ := filepath.Abs(filepath.Dir(file.Name()))
 				playlist = append(playlist, v)
 			}
 		}
