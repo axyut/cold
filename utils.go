@@ -10,17 +10,18 @@ import (
 	"strings"
 )
 
-func shufflePlaylist() {
+var Notifications []string
+
+func shufflePlaylist(playlist []string) {
 	rand.Shuffle(len(playlist), func(i, j int) {
 		playlist[i], playlist[j] = playlist[j], playlist[i]
 	})
 }
-func serializePlaylist() {
+func serializePlaylist(playlist []string) {
 	// just doing addFolder for now which doesn't cover when individual files opened in command $playgo a.mp3 b.mp3
-	addFolder(".")
+	addFolder(".", playlist)
 }
-func addFolder(path string) error {
-	playlist = []string{}
+func addFolder(path string, playlist []string) error {
 	fileInfos, err := os.ReadDir(path)
 	if err != nil {
 		log.Println("Couldn't Read from Current Directory!\n")
@@ -41,9 +42,11 @@ func addFolder(path string) error {
 	}
 	return nil
 }
+
 func Remove(slice []string, s int) []string {
 	return append(slice[:s], slice[s+1:]...)
 }
+
 func (player *Player) handleInterrupt() {
 	hideCursor()
 
@@ -57,7 +60,8 @@ func (player *Player) handleInterrupt() {
 		}
 	}()
 }
-func toogleSetting(str rune) {
+
+func toogleSetting(str rune, list []string, UserSetting Setting) {
 	suf, repS, repP := UserSetting.Shuffle, UserSetting.RepeatSong, UserSetting.RepeatPlaylist
 	switch str {
 	case 'e':
@@ -68,10 +72,10 @@ func toogleSetting(str rune) {
 		// serialize
 		suf = !suf
 		if suf {
-			shufflePlaylist()
+			shufflePlaylist(list)
 			notify("Shuffle On.")
 		} else {
-			serializePlaylist()
+			serializePlaylist(list)
 			notify("Shuffle Off.")
 		}
 	}
@@ -95,7 +99,7 @@ func toogleSetting(str rune) {
 // 	return songNum
 // }
 
-func inPlaylist(songNum int) bool {
+func inPlaylist(songNum int, playlist []string) bool {
 	for _, v := range playedList {
 		if playlist[songNum] == v {
 			return true
@@ -105,8 +109,9 @@ func inPlaylist(songNum int) bool {
 }
 
 func notify(str string) {
-	notifications = append([]string{str}, notifications...)
+	Notifications = append([]string{str}, Notifications...)
 }
+
 func stripString(str string) string {
 	maxX, _ := termSize()
 	strip := maxX / 3
@@ -121,7 +126,7 @@ func stripString(str string) string {
 	return str
 }
 
-func getSong(i int) Activelist {
+func getSong(i int, playlist []string, UserSetting Setting) Activelist {
 	var prevSong, curSong, nextSong int
 	prevSong = i - 1
 	curSong = i

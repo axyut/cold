@@ -8,18 +8,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hajimehoshi/go-mp3"
+	mp3 "github.com/axyut/playgo/internal/mp3Decoder"
+	// keypress listener
 	"github.com/mattn/go-tty"
 )
 
-// when file is deleted, if cannot open file remove from playlist
-// change the playlist as a whole when shuffled, re-load folder if turned off
 func main() {
 	handleArgs()
 top:
 	for i := 0; ; i++ {
 	repeatSameSong:
-		songs := getSong(i)
+		songs := getSong(i, playlist, UserSetting)
 		player := play(songs.currentSong)
 		if player == nil {
 			continue
@@ -66,7 +65,7 @@ func play(songNum int) *Player {
 	}
 
 	// Decode file. This process is done as the file plays so it won't load whole thing into memory
-	decodedMp3, err := mp3.NewDecoder(file)
+	decodedMp3, err := mp3.Decode(file)
 
 	if err != nil {
 		panic("mp3.NewDecoder failed: " + err.Error())
@@ -83,12 +82,12 @@ func play(songNum int) *Player {
 		UserSetting,
 		file,
 		songNum,
-		*decodedMp3,
 	}
 	newPlayer.Music.Play()
 	go newPlayer.listenForKey()
 	return &newPlayer
 }
+
 func (p *Player) listenForKey() {
 	tty, err := tty.Open()
 	if err != nil {
@@ -116,11 +115,11 @@ func (p *Player) listenForKey() {
 			case 's': // volume down
 				notify("-- VOL")
 			case 't': // shuffle
-				toogleSetting('t')
+				toogleSetting('t', playlist, UserSetting)
 			case 'e': // repeat playlist
-				toogleSetting('e')
+				toogleSetting('e', playlist, UserSetting)
 			case 'r': // repeat Song
-				toogleSetting('r')
+				toogleSetting('r', playlist, UserSetting)
 			case 'q':
 				displayStats()
 			}
@@ -129,11 +128,11 @@ func (p *Player) listenForKey() {
 }
 func handleArgs() {
 	if len(os.Args) == 1 {
-		addFolder(".")
+		addFolder(".", playlist)
 	} else
 	// check if it's files or a folder
 	if os.Args[1] == "." {
-		addFolder(".")
+		addFolder(".", playlist)
 	} else {
 		for i, v := range os.Args {
 			if i == 0 {
@@ -168,6 +167,6 @@ func handleArgs() {
 		}
 	}
 	if UserSetting.Shuffle {
-		shufflePlaylist()
+		shufflePlaylist(playlist)
 	}
 }

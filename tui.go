@@ -141,7 +141,7 @@ func (p *Player) display() {
 	// Notification
 	moveCursor(pos{maxX / 2, int(float32(maxY)/1.25) - 1})
 	fmt.Fprintln(screen, "NOTIFICATIONS")
-	for i, v := range notifications {
+	for i, v := range Notifications {
 		if i > 4 {
 			break
 		}

@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/ebitengine/oto/v3"
-	"github.com/hajimehoshi/go-mp3"
 )
 
 // Prepare an Oto context (creating context for single time)
@@ -17,7 +16,6 @@ var otoCtx, readyChan, otoErr = oto.NewContext(op)
 var playlist []string
 var playedList []string
 var favorites []string
-var notifications []string
 var timer int
 var completedPlaylist int
 
@@ -28,7 +26,6 @@ type Player struct {
 	UserSetting Setting
 	File        *os.File
 	Song        int
-	MP3         mp3.Decoder
 }
 
 type Stats struct {
