@@ -9,6 +9,7 @@ import (
 	"time"
 
 	mp3 "github.com/axyut/playgo/internal/mp3Decoder"
+	"github.com/axyut/playgo/internal/tui"
 	// keypress listener
 	"github.com/mattn/go-tty"
 )
@@ -18,13 +19,13 @@ func main() {
 top:
 	for i := 0; ; i++ {
 	repeatSameSong:
-		songs := getSong(i, playlist, UserSetting)
+		songs := getSong(i, &playlist, UserSetting)
 		player := play(songs.currentSong)
 		if player == nil {
 			continue
 		}
 		player.handleInterrupt()
-		player.display()
+		tui.Display(playlist, Notifications, songs.currentSong, songs.prevSong, songs.nextSong, UserSetting.Shuffle, UserSetting.RepeatSong, UserSetting.RepeatPlaylist)
 		// go player.listenForKey()
 		for player.Music.IsPlaying() {
 			time.Sleep(time.Millisecond)
@@ -51,7 +52,7 @@ top:
 		notify("Restarting Playlist.")
 		goto top
 	}
-	displayStats()
+	tui.DisplayStats(playlist, playedList, completedPlaylist)
 }
 
 // seek, next , prevous, pause, play, settings
@@ -115,24 +116,24 @@ func (p *Player) listenForKey() {
 			case 's': // volume down
 				notify("-- VOL")
 			case 't': // shuffle
-				toogleSetting('t', playlist, UserSetting)
+				toogleSetting('t', &playlist, &UserSetting)
 			case 'e': // repeat playlist
-				toogleSetting('e', playlist, UserSetting)
+				toogleSetting('e', &playlist, &UserSetting)
 			case 'r': // repeat Song
-				toogleSetting('r', playlist, UserSetting)
+				toogleSetting('r', &playlist, &UserSetting)
 			case 'q':
-				displayStats()
+				tui.DisplayStats(playlist, playedList, completedPlaylist)
 			}
 		}
 	}
 }
 func handleArgs() {
 	if len(os.Args) == 1 {
-		addFolder(".", playlist)
+		addFolder(".", &playlist)
 	} else
 	// check if it's files or a folder
 	if os.Args[1] == "." {
-		addFolder(".", playlist)
+		addFolder(".", &playlist)
 	} else {
 		for i, v := range os.Args {
 			if i == 0 {
@@ -167,6 +168,6 @@ func handleArgs() {
 		}
 	}
 	if UserSetting.Shuffle {
-		shufflePlaylist(playlist)
+		shufflePlaylist(&playlist)
 	}
 }
