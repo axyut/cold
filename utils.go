@@ -117,7 +117,6 @@ func notify(str string) {
 }
 
 func getSong(i int, playlist *[]string, UserSetting Setting) Activelist {
-	fmt.Println(playlist)
 	var prevSong, curSong, nextSong int
 	prevSong = i - 1
 	curSong = i
