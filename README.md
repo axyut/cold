@@ -128,4 +128,7 @@ If installed with `go install` remove bin file from your go bin path. If not set
 <!-- imp
 [project structure](https://github.com/golang-standards/project-layout/blob/master/test/README.md)
 setup go build command with test mp3 files
+
+git tag v0.1.1
+git push origin v0.1.1
 -->
