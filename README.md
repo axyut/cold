@@ -131,4 +131,5 @@ setup go build command with test mp3 files
 
 git tag v0.1.1
 git push origin v0.1.1
+GOPROXY=proxy.golang.org go list -m github.com/axyut/playgo@v0.1.1
 -->
