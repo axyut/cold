@@ -121,14 +121,15 @@ func listenForKey() {
 	for {
 		if char, err := tty.ReadRune(); err == nil {
 			// str := string(char)
+			// fmt.Println(str)
 			switch char {
-			case 'h': // prev Music
+			case 'a': // prev Music
 				notify("<< Previous")
-			case 'j': // seek left
+			case 'q': // seek left
 				notify("<< 10s ")
-			case 'k': // seek right
+			case 'e': // seek right
 				notify(">> 10s")
-			case 'l': // next Music
+			case 'd': // next Music
 				notify(">> Next")
 			case 'p': // play/pause
 				notify("|> Paused")
@@ -137,13 +138,13 @@ func listenForKey() {
 				notify("++ VOL")
 			case 's': // volume down
 				notify("-- VOL")
-			case 't': // shuffle
+			case 'y': // shuffle
+				toogleSetting('y', &playlist, &UserSetting)
+			case 't': // repeat playlist
 				toogleSetting('t', &playlist, &UserSetting)
-			case 'e': // repeat playlist
-				toogleSetting('e', &playlist, &UserSetting)
 			case 'r': // repeat Song
 				toogleSetting('r', &playlist, &UserSetting)
-			case 'q':
+			case 'x':
 				tui.DisplayStats(playlist, playedList, completedPlaylist)
 			}
 		}
@@ -153,11 +154,11 @@ func listenForKey() {
 func toogleSetting(str rune, list *[]string, UserSetting *g.Setting) {
 	suf, repS, repP := UserSetting.Shuffle, UserSetting.RepeatSong, UserSetting.RepeatPlaylist
 	switch str {
-	case 'e':
+	case 't':
 		repP = !repP
 	case 'r':
 		repS = !repS
-	case 't':
+	case 'y':
 		// serialize
 		suf = !suf
 		if suf {

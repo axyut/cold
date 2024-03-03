@@ -25,13 +25,37 @@ func Display(rplaylist *[]string, rnotifs *[]string, songs *g.Activelist, UserSe
 		seprator()
 
 		currentlyPlaying(playlist, currentSong)
+		displayPrevSongs(playlist, currentSong)
 		displayNextSongs(playlist, currentSong)
 		displaySettings(Shuffle, RepeatSong, RepeatPlaylist)
 		displayNowPlaying(playlist, currentSong)
 		displayNotifications(notifs)
 
 		render()
-		time.Sleep(time.Millisecond * 500)
+		time.Sleep(time.Millisecond * 200)
+	}
+}
+
+func displayPrevSongs(playlist []string, currentSong int) {
+	// Playlist
+	// TODO: will make playlist scrollable with cursor later on
+	// will later implement this to show all playlist when certain key pressed.
+	moveCursor(pos{3, 1})
+	fmt.Fprintf(screen, "PLAYLIST (%d songs)", len(playlist))
+
+	// 1. iterate playedList? start currentSong from top and move down as playedList increases upto ~5 prev songs
+	// 2. iterate playlist? start at constant row and provide what would be last ~5 songs then gradually add playedList
+	// prev songs, idk which option better, now implementing 2.
+	totalPrevSongs := 3
+	for i := 1; i <= totalPrevSongs; i++ {
+		prev := currentSong - i
+		if prev <= -1 {
+			for prev <= -1 {
+				prev = prev + len(playlist)
+			}
+		}
+		moveCursor(pos{2, (maxY / 4) - i})
+		color.Magenta(fmt.Sprintf("%s", stripString(playlist[prev])))
 	}
 }
 
@@ -61,11 +85,11 @@ func displaySettings(Shuffle, RepeatSong, RepeatPlaylist bool) {
 	moveCursor(pos{2, intH - 1})
 	fmt.Fprintf(screen, "SETTINGS")
 	moveCursor(pos{3, intH})
-	fmt.Fprintf(screen, "[t] Shuffle: %t", Shuffle)
-	moveCursor(pos{3, intH + 1})
 	fmt.Fprintf(screen, "[r] Repeat Song: %t", RepeatSong)
-	moveCursor((pos{3, intH + 2}))
-	fmt.Fprintf(screen, "[e] Repeat playlist: %t", RepeatPlaylist)
+	moveCursor((pos{3, intH + 1}))
+	fmt.Fprintf(screen, "[t] Repeat playlist: %t", RepeatPlaylist)
+	moveCursor(pos{3, intH + 2})
+	fmt.Fprintf(screen, "[y] Shuffle: %t", Shuffle)
 }
 
 func displayNowPlaying(playlist []string, currentSong int) {

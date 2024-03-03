@@ -29,19 +29,17 @@ play all music in folder    - $playgo / $playgo . / $playgo ~/Music/path
 help                        - $playgo -h
 test condition/health       - $playgo -t
 ## while playing
-q - quit player
+x - quit player
 p - Play/Pause
 
-h - play previous song
-j - seek backward 10s
-k - seek forward 10s
-l - play next song
+q - seek backward 10s
+e - seek forward 10s
 
 w - Increase Volume by 5%
-a -
+a - play previous song
 s - Decrease Volume by 5%
-d -
+d - play next song
 
-e - Toogle Repeat Playlist On/Off
 r - Toogle Repeat Song On/Off
-t - Toogle Shuffle On/Off`
+t - Toogle Repeat Playlist On/Off
+y - Toogle Shuffle On/Off`
