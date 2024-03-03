@@ -124,6 +124,12 @@ type Render struct {
 	Reset     func()
 }
 
+type ARender interface {
+	Black(...string)
+	Red(...string)
+	Green(...string)
+}
+
 // works for now, not practical approach for adding new rendering methods
 // color struct itoa or sth, map with string and display with one function without this shit.
 var color = Render{

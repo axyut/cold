@@ -20,9 +20,10 @@ Play Music in terminal. Written in Go. Relatively feature-packed.
 ### Built With
 
 - [Go](https://golang.org/)
-- [Mp3 Engine](https://github.com/ebitengine/oto/v3)
+- [Mp3 Engine (go-mp3, oto)](https://github.com/ebitengine/oto/v3)
 
 ### Requirements
+
 - [Go](https://golang.org/)
 - Windows `files.exe`
 - Linux `libs`
@@ -31,15 +32,19 @@ Play Music in terminal. Written in Go. Relatively feature-packed.
 ## Installation
 
 ### Go
+
 ```bash
 go install github.com/axyut/playgo@latest
 ```
+
 ### Curl
+
 ```bash
 curl ...install.sh
 ```
 
 ## Development
+
 - `go run . .` from the source
 - `GOOS=linux GOARCH=amd64 go build -o ~/go/bin/ .` build to your bin path.
 - `GOOS=linux GOARCH=amd64 go build . && sudo cp playgo /usr/local/bin/` build for the system.
@@ -47,15 +52,26 @@ curl ...install.sh
   - `GOOS=windows GOARCH=amd64` Windows
 
 ## Features
-- Basic Music Player Features (Shuffle, Repeat, Seek etc)
-- Light weight with minimum dependencies
-- Visualization (...)
+
+- [x] Plays Music.
+- [x] Light weight with minimum dependencies.
+- [ ] Controls.
+- [ ] Visualization.
 
 ## Themes
-- UI with [bubbletea](https://github.com/charmbracelet/bubbletea)
-- Raw UI Build
+
+- [ ] UI with [bubbletea](https://github.com/charmbracelet/bubbletea)
+- [x] Raw UI Build
+
+## Audio Engine
+
+- [x] [oto](https://github.com/ebitengine/oto/v3)
+- [x] [go-mp3](https://github.com/hajimehoshi/go-mp3)
+- [ ] [beep](https://github.com/faiface/beep)
+- [ ] [portaudio](https://github.com/gordonklaus/portaudio)
 
 ## Usage
+
 ```plaintext
 ## flags
   play files                  - $playgo <file.mp3> <file2.mp3>
@@ -72,7 +88,7 @@ curl ...install.sh
   l - play next song
 
   w - Increase Volume by 5%
-  a - 
+  a -
   s - Decrease Volume by 5%
   d -
 
@@ -80,7 +96,9 @@ curl ...install.sh
   r - Toogle Repeat Song On/Off
   t - Toogle Shuffle On/Off
 ```
+
 ## Configuration
+
 About settings...
 A config file will be generated when you first run `playgo`. Depending on your operating system it can be found in one of the following locations:
 
@@ -102,8 +120,11 @@ setting:
 theme:
   raw: true
 ```
+
 ## Uninstalling
+
 If installed with `go install` remove bin file from your go bin path. If not setup, by default it is in `~/go/bin`, If installed with curl ...
+
 <!-- imp
 [project structure](https://github.com/golang-standards/project-layout/blob/master/test/README.md)
 setup go build command with test mp3 files

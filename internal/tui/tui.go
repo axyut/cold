@@ -3,42 +3,45 @@ package tui
 import (
 	"fmt"
 	"os"
+	"time"
+
+	g "github.com/axyut/playgo/internal/global"
 )
 
-func Display(playlist []string, notifs []string, currentSong, prevSong, nextSong int, Shuffle, RepeatSong, RepeatPlaylist bool) {
-	clear()
-	HideCursor()
-	// border()
-	seprator()
-	maxX, maxY := termSize()
+var maxX, maxY = termSize()
 
-	// Playlist
-	// TODO: will make playlist scrollable with cursor later on
-	// will later implement this to show all playlist when certain key pressed.
-	moveCursor(pos{3, 1})
-	fmt.Fprintf(screen, "PLAYLIST (%d songs)", len(playlist))
+func Display(rplaylist *[]string, rnotifs *[]string, songs *g.Activelist, UserSetting *g.Setting) {
+	for {
+		playlist := *rplaylist
+		notifs := *rnotifs
+		currentSong := *&songs.CurrentSong
+		Shuffle := *&UserSetting.Shuffle
+		RepeatSong := *&UserSetting.RepeatSong
+		RepeatPlaylist := *&UserSetting.RepeatPlaylist
 
-	// 1. iterate playedList? start currentSong from top and move down as playedList increases upto ~5 prev songs
-	// 2. iterate playlist? start at constant row and provide what would be last ~5 songs then gradually add playedList
-	// prev songs, idk which option better, now implementing 2.
-	totalPrevSongs := 3
-	for i := 1; i <= totalPrevSongs; i++ {
-		prev := currentSong - i
-		if prev <= -1 {
-			for prev <= -1 {
-				prev = prev + len(playlist)
-			}
-		}
-		moveCursor(pos{2, (maxY / 4) - i})
-		color.Magenta(fmt.Sprintf("%s", stripString(playlist[prev])))
+		clear()
+		HideCursor()
+		// border()
+		seprator()
+
+		currentlyPlaying(playlist, currentSong)
+		displayNextSongs(playlist, currentSong)
+		displaySettings(Shuffle, RepeatSong, RepeatPlaylist)
+		displayNowPlaying(playlist, currentSong)
+		displayNotifications(notifs)
+
+		render()
+		time.Sleep(time.Millisecond * 500)
 	}
+}
 
-	// currently Playing
+func currentlyPlaying(playlist []string, currentSong int) {
 	moveCursor(pos{2, maxY / 4})
 	color.Reversed()
 	color.Cyan(fmt.Sprintf("⏯️%s", stripString(playlist[currentSong])))
+}
 
-	// next songs
+func displayNextSongs(playlist []string, currentSong int) {
 	totalNextSongs := 6
 	for j := 1; j <= totalNextSongs; j++ {
 		next := currentSong + j
@@ -51,28 +54,30 @@ func Display(playlist []string, notifs []string, currentSong, prevSong, nextSong
 		color.Blue(fmt.Sprintf("%s", stripString(playlist[next])))
 	}
 
-	// Settings
+}
+
+func displaySettings(Shuffle, RepeatSong, RepeatPlaylist bool) {
 	intH := int(float32(maxY) / 1.25)
 	moveCursor(pos{2, intH - 1})
 	fmt.Fprintf(screen, "SETTINGS")
 	moveCursor(pos{3, intH})
-	fmt.Fprintf(screen, "Shuffle: %t", Shuffle)
+	fmt.Fprintf(screen, "[t] Shuffle: %t", Shuffle)
 	moveCursor(pos{3, intH + 1})
-	fmt.Fprintf(screen, "Repeat Song: %t", RepeatSong)
+	fmt.Fprintf(screen, "[r] Repeat Song: %t", RepeatSong)
 	moveCursor((pos{3, intH + 2}))
-	fmt.Fprintf(screen, "Repeat playlist: %t", RepeatPlaylist)
+	fmt.Fprintf(screen, "[e] Repeat playlist: %t", RepeatPlaylist)
+}
 
-	// Now Playing
+func displayNowPlaying(playlist []string, currentSong int) {
 	moveCursor(pos{maxX / 2, 1})
 	fmt.Fprintf(screen, "NOW PLAYING")
 	moveCursor(pos{maxX / 2, 3})
 	fmt.Fprintf(screen, "%s", stripString(playlist[currentSong]))
 	moveCursor(pos{maxX / 2, 4})
-	fmt.Fprintf(screen, "%d:00 -------------------- 3:14s")
-	// song info
-	// seek info
+	fmt.Fprintf(screen, "0:00 -------------------- 3:14s")
+}
 
-	// Notification
+func displayNotifications(notifs []string) {
 	moveCursor(pos{maxX / 2, int(float32(maxY)/1.25) - 1})
 	fmt.Fprintln(screen, "NOTIFICATIONS")
 	for i, v := range notifs {
@@ -82,8 +87,6 @@ func Display(playlist []string, notifs []string, currentSong, prevSong, nextSong
 		moveCursor(pos{maxX / 2, int(float32(maxY)/1.25) + i})
 		fmt.Fprintf(screen, " %s", stripString(v))
 	}
-
-	render()
 }
 
 func DisplayStats(playlist, playedList []string, completedPlaylist int) {

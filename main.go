@@ -8,25 +8,28 @@ import (
 	"strings"
 	"time"
 
+	g "github.com/axyut/playgo/internal/global"
 	mp3 "github.com/axyut/playgo/internal/mp3Decoder"
 	"github.com/axyut/playgo/internal/tui"
-	// keypress listener
-	"github.com/mattn/go-tty"
 )
 
 func main() {
 	handleArgs()
+	handleInterrupt()
+	go listenForKey()
+
 top:
 	for i := 0; ; i++ {
 	repeatSameSong:
 		songs := getSong(i, &playlist, UserSetting)
-		player := play(songs.currentSong)
+
+		player := play(songs.CurrentSong)
 		if player == nil {
 			continue
 		}
-		player.handleInterrupt()
-		tui.Display(playlist, Notifications, songs.currentSong, songs.prevSong, songs.nextSong, UserSetting.Shuffle, UserSetting.RepeatSong, UserSetting.RepeatPlaylist)
-		// go player.listenForKey()
+
+		go tui.Display(&playlist, &Notifications, songs, &UserSetting)
+
 		for player.Music.IsPlaying() {
 			time.Sleep(time.Millisecond)
 		}
@@ -36,9 +39,11 @@ top:
 			panic("player.Close failed: " + err.Error())
 		}
 		player.File.Close()
-		playedList = appendOnlyOriginal(playedList, playlist[songs.currentSong])
-		played := fmt.Sprintf("Played %s", playlist[songs.currentSong])
+
+		playedList = appendOnlyOriginal(playedList, playlist[songs.CurrentSong])
+		played := fmt.Sprintf("Played %s", playlist[songs.CurrentSong])
 		notify(played)
+
 		if len(playedList) == len(playlist) {
 			playedList = []string{}
 			completedPlaylist++
@@ -72,7 +77,7 @@ func play(songNum int) *Player {
 		panic("mp3.NewDecoder failed: " + err.Error())
 	}
 	if otoErr != nil {
-		panic("oto.NewContext failed: " + err.Error())
+		panic("oto.NewContext failed: " + otoErr.Error())
 	}
 	// It might take a bit for the hardware audio devices to be ready, so we wait on the channel.
 	<-readyChan
@@ -85,48 +90,9 @@ func play(songNum int) *Player {
 		songNum,
 	}
 	newPlayer.Music.Play()
-	go newPlayer.listenForKey()
 	return &newPlayer
 }
 
-func (p *Player) listenForKey() {
-	tty, err := tty.Open()
-	if err != nil {
-		panic(err)
-	}
-	defer tty.Close()
-	// listen for keypress
-	for {
-		if char, err := tty.ReadRune(); err == nil {
-			// str := string(char)
-			switch char {
-			case 'h': // prev Music
-				notify("<< Previous")
-			case 'j': // seek left
-				notify("<< 10s ")
-			case 'k': // seek right
-				notify(">> 10s")
-			case 'l': // next Music
-				notify(">> Next")
-			case 'p': // play/pause
-				notify("|> Paused")
-				notify("|| Playing")
-			case 'w': // volume up
-				notify("++ VOL")
-			case 's': // volume down
-				notify("-- VOL")
-			case 't': // shuffle
-				toogleSetting('t', &playlist, &UserSetting)
-			case 'e': // repeat playlist
-				toogleSetting('e', &playlist, &UserSetting)
-			case 'r': // repeat Song
-				toogleSetting('r', &playlist, &UserSetting)
-			case 'q':
-				tui.DisplayStats(playlist, playedList, completedPlaylist)
-			}
-		}
-	}
-}
 func handleArgs() {
 	if len(os.Args) == 1 {
 		addFolder(".", &playlist)
@@ -143,13 +109,13 @@ func handleArgs() {
 				v = v[1:]
 				switch v {
 				default:
-					fmt.Println(usage)
+					fmt.Println(g.Usage)
 				case flags.Test:
 					fmt.Println("Checking Players Health.")
 					//TODO: to pass all the tests
 					fmt.Println("OK!")
 				case flags.Help:
-					fmt.Println(usage)
+					fmt.Println(g.Usage)
 				}
 				os.Exit(0)
 			}
