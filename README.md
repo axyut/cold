@@ -25,9 +25,11 @@ Play Music in terminal. Written in Go. Relatively feature-packed.
 ### Requirements
 
 - [Go](https://golang.org/)
-- Windows `files.exe`
-- Linux `libs`
-- Mac `packs`
+- Windows `go`
+- Debian `go libasound2-dev`
+- Mac
+- Arch
+- Fedora
 
 ## Installation
 
