@@ -29,13 +29,13 @@ jobs:
           only-new-issues: # optional, default is false
           # if set to true then the all caching functionality will be complete disabled, takes precedence over all other caching options.
 
-          skip-cache: false
+          skip-cache: false # optional, default is false
           # if set to true then the action will not save any caches, but it may still restore existing caches, subject to other options.
 
-          skip-save-cache: # optional, default is false
+          skip-save-cache: false # optional, default is false
           # Force the usage of the embedded problem matchers
           problem-matchers: # optional, default is false
           # golangci-lint command line arguments
           args: # optional, default is 
           # Periodically invalidate a cache because a new code being added. (number of days)
-          cache-invalidation-interval: # optional, default is 7
+          cache-invalidation-interval: 7 # optional, default is 7
