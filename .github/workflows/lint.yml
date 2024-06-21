@@ -18,15 +18,15 @@ jobs:
         uses: golangci/golangci-lint-action@v6.0.1
         with:
           # The version of golangci-lint to use.
-          version: # optional
+          version: 6.0.1 # optional
           # The mode to install golangci-lint. It can be 'binary' or 'goinstall'.
-          install-mode: # optional, default is binary
+          install-mode: binary # optional, default is binary
           # golangci-lint working directory, default is project root
-          working-directory: # optional
+          # working-directory: # optional
           # the token is used for fetching patch of a pull request to show only new issues
-          github-token: # optional, default is ${{ github.token }}
+          github-token: ${{ github.token }} # optional, default is ${{ github.token }}
           # if set to true and the action runs on a pull request - the action outputs only newly found issues
-          only-new-issues: # optional, default is false
+          only-new-issues: false # optional, default is false
           # if set to true then the all caching functionality will be complete disabled, takes precedence over all other caching options.
 
           skip-cache: false # optional, default is false
@@ -34,8 +34,8 @@ jobs:
 
           skip-save-cache: false # optional, default is false
           # Force the usage of the embedded problem matchers
-          problem-matchers: # optional, default is false
+          problem-matchers: false # optional, default is false
           # golangci-lint command line arguments
-          args: # optional, default is 
+          # args: # optional, default is 
           # Periodically invalidate a cache because a new code being added. (number of days)
           cache-invalidation-interval: 7 # optional, default is 7
