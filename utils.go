@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"path/filepath"
 
-	g "github.com/axyut/playgo/internal/global"
+	c "github.com/axyut/playgo/internal/config"
 	"github.com/axyut/playgo/internal/tui"
 
 	"github.com/ebitengine/oto/v3"
@@ -37,24 +37,24 @@ var completedPlaylist int
 
 type Player struct {
 	Music       *oto.Player
-	UserSetting g.Setting
+	UserSetting c.UserSetting
 	File        *os.File
 	Song        int
 }
 
-var UserSetting = g.Setting{
+var UserSetting = c.UserSetting{
 	Shuffle:        true,
 	RepeatSong:     false, // if Shuffle false it's no use for RepeatSong to be true
 	RepeatPlaylist: true,
 }
 
-var songs = g.Activelist{
+var songs = c.Activelist{
 	PrevSong:    -1,
 	CurrentSong: 0,
 	NextSong:    1,
 }
 
-var flags = g.Flag{
+var flags = c.Flag{
 	Help: "h",
 	Test: "t",
 }
@@ -87,7 +87,7 @@ func addFolder(path string, playlist *[]string) error {
 	}
 
 	if len(*playlist) == 0 {
-		fmt.Println(g.Usage)
+		fmt.Println(c.Usage)
 		os.Exit(0)
 	}
 	return nil
@@ -151,7 +151,7 @@ func listenForKey() {
 	}
 }
 
-func toogleSetting(str rune, list *[]string, UserSetting *g.Setting) {
+func toogleSetting(str rune, list *[]string, UserSetting *c.UserSetting) {
 	suf, repS, repP := UserSetting.Shuffle, UserSetting.RepeatSong, UserSetting.RepeatPlaylist
 	switch str {
 	case 't':
@@ -169,7 +169,7 @@ func toogleSetting(str rune, list *[]string, UserSetting *g.Setting) {
 			notify("Shuffle Off.")
 		}
 	}
-	*UserSetting = g.Setting{
+	*UserSetting = c.UserSetting{
 		Shuffle:        suf,
 		RepeatSong:     repS,
 		RepeatPlaylist: repP,
@@ -204,7 +204,7 @@ func notify(str string) {
 	Notifications = append([]string{str}, Notifications...)
 }
 
-func getSong(i int, playlist *[]string, UserSetting g.Setting) *g.Activelist {
+func getSong(i int, playlist *[]string, UserSetting c.UserSetting) *c.Activelist {
 	var prevSong, curSong, nextSong int
 	prevSong = i - 1
 	curSong = i
@@ -216,7 +216,7 @@ func getSong(i int, playlist *[]string, UserSetting g.Setting) *g.Activelist {
 	} else {
 		nextSong = i + 1
 	}
-	songs = g.Activelist{
+	songs = c.Activelist{
 		PrevSong:    prevSong,
 		CurrentSong: curSong,
 		NextSong:    nextSong,

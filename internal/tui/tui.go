@@ -5,19 +5,19 @@ import (
 	"os"
 	"time"
 
-	g "github.com/axyut/playgo/internal/global"
+	c "github.com/axyut/playgo/internal/config"
 )
 
 var maxX, maxY = termSize()
 
-func Display(rplaylist *[]string, rnotifs *[]string, songs *g.Activelist, UserSetting *g.Setting) {
+func Display(rplaylist *[]string, rnotifs *[]string, songs *c.Activelist, UserSetting *c.UserSetting) {
 	for {
 		playlist := *rplaylist
 		notifs := *rnotifs
-		currentSong := *&songs.CurrentSong
-		Shuffle := *&UserSetting.Shuffle
-		RepeatSong := *&UserSetting.RepeatSong
-		RepeatPlaylist := *&UserSetting.RepeatPlaylist
+		currentSong := songs.CurrentSong
+		Shuffle := UserSetting.Shuffle
+		RepeatSong := UserSetting.RepeatSong
+		RepeatPlaylist := UserSetting.RepeatPlaylist
 
 		clear()
 		HideCursor()
@@ -55,7 +55,7 @@ func displayPrevSongs(playlist []string, currentSong int) {
 			}
 		}
 		moveCursor(pos{2, (maxY / 4) - i})
-		color.Magenta(fmt.Sprintf("%s", stripString(playlist[prev])))
+		color.Magenta("%s", stripString(playlist[prev]))
 	}
 }
 
@@ -75,7 +75,7 @@ func displayNextSongs(playlist []string, currentSong int) {
 			}
 		}
 		moveCursor(pos{2, (maxY / 4) + j})
-		color.Blue(fmt.Sprintf("%s", stripString(playlist[next])))
+		color.Blue("%s", stripString(playlist[next]))
 	}
 
 }

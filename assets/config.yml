@@ -1,10 +1,11 @@
-setting:
+settings:
   general:
+    start_dir: ~/Music
     show_icons: true
+    enable_logging: false 
   player:
     shuffle: true
     repeat_playlist: true
   music:
     repeat_song: false
-theme:
-  raw: true
+  theme: raw # raw, bubbletea

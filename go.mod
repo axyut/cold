@@ -7,6 +7,7 @@ require (
 	github.com/hajimehoshi/go-mp3 v0.3.4
 	github.com/mattn/go-tty v0.0.5
 	golang.org/x/term v0.15.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (

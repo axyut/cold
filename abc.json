@@ -1,0 +1,4 @@
+type User struct {
+	AvatarURL         string      `json:"avatar_url"`
+	Bio               interface{} `json:"bio"`
+	Blog              string      `json:"blog"`

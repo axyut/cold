@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	g "github.com/axyut/playgo/internal/global"
+	c "github.com/axyut/playgo/internal/config"
 	mp3 "github.com/axyut/playgo/internal/mp3Decoder"
 	"github.com/axyut/playgo/internal/tui"
 )
@@ -109,13 +109,13 @@ func handleArgs() {
 				v = v[1:]
 				switch v {
 				default:
-					fmt.Println(g.Usage)
+					fmt.Println(c.Usage)
 				case flags.Test:
 					fmt.Println("Checking Players Health.")
 					//TODO: to pass all the tests
 					fmt.Println("OK!")
 				case flags.Help:
-					fmt.Println(g.Usage)
+					fmt.Println(c.Usage)
 				}
 				os.Exit(0)
 			}
