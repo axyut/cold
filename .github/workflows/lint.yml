@@ -1,0 +1,41 @@
+name: Lint Go Code
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Golangci-lint
+        # You may pin to the exact commit or the version.
+        # uses: golangci/golangci-lint-action@a4f60bb28d35aeee14e6880718e0c85ff1882e64
+        uses: golangci/golangci-lint-action@v6.0.1
+        with:
+          # The version of golangci-lint to use.
+          version: # optional
+          # The mode to install golangci-lint. It can be 'binary' or 'goinstall'.
+          install-mode: # optional, default is binary
+          # golangci-lint working directory, default is project root
+          working-directory: # optional
+          # the token is used for fetching patch of a pull request to show only new issues
+          github-token: # optional, default is ${{ github.token }}
+          # if set to true and the action runs on a pull request - the action outputs only newly found issues
+          only-new-issues: # optional, default is false
+          # if set to true then the all caching functionality will be complete disabled, takes precedence over all other caching options.
+
+          skip-cache: # optional, default is false
+          # if set to true then the action will not save any caches, but it may still restore existing caches, subject to other options.
+
+          skip-save-cache: # optional, default is false
+          # Force the usage of the embedded problem matchers
+          problem-matchers: # optional, default is false
+          # golangci-lint command line arguments
+          args: # optional, default is 
+          # Periodically invalidate a cache because a new code being added. (number of days)
+          cache-invalidation-interval: # optional, default is 7

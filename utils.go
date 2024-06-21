@@ -68,7 +68,9 @@ func shufflePlaylist(playlist *[]string) {
 
 func serializePlaylist(playlist *[]string) {
 	// just doing addFolder for now which doesn't cover when individual files opened in command $playgo a.mp3 b.mp3
-	addFolder(".", playlist)
+	if err := addFolder(".", playlist); err != nil {
+		log.Default().Println(err)
+	}
 }
 
 func addFolder(path string, playlist *[]string) error {

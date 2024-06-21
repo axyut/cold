@@ -17,11 +17,11 @@ type Setting struct {
 	RepeatPlaylist bool
 }
 
-type Activelist struct {
-	prevSong    int
-	currentSong int
-	nextSong    int
-}
+// type Activelist struct {
+// 	prevSong    int
+// 	currentSong int
+// 	nextSong    int
+// }
 
 var screen = bufio.NewWriter(os.Stdout)
 
@@ -40,9 +40,9 @@ func clear() {
 	fmt.Fprint(screen, "\033[2J")
 }
 
-func draw(str string) {
-	fmt.Fprint(screen, str)
-}
+// func draw(str string) {
+// 	fmt.Fprint(screen, str)
+// }
 
 // write all data in buffer to terminal
 func render() {
@@ -57,23 +57,23 @@ func termSize() (width int, height int) {
 	return width, height
 }
 
-func border() {
-	maxX, maxY := termSize()
-	// ---- top ---- bottom
-	for i := 1; i <= maxX; i++ {
-		fmt.Fprintf(screen, "\033[1;%dH", i)
-		fmt.Fprintf(screen, "_")
-		fmt.Fprintf(screen, "\033[%d;%dH", maxY, i)
-		fmt.Fprintf(screen, "_")
-	}
-	// | left | right |
-	for i := 1; i <= maxY; i++ {
-		fmt.Fprintf(screen, "\033[%d;1H", i)
-		fmt.Fprintf(screen, "|")
-		fmt.Fprintf(screen, "\033[%d;%dH", i, maxX)
-		fmt.Fprintf(screen, "|")
-	}
-}
+// func border() {
+// 	maxX, maxY := termSize()
+// 	// ---- top ---- bottom
+// 	for i := 1; i <= maxX; i++ {
+// 		fmt.Fprintf(screen, "\033[1;%dH", i)
+// 		fmt.Fprintf(screen, "_")
+// 		fmt.Fprintf(screen, "\033[%d;%dH", maxY, i)
+// 		fmt.Fprintf(screen, "_")
+// 	}
+// 	// | left | right |
+// 	for i := 1; i <= maxY; i++ {
+// 		fmt.Fprintf(screen, "\033[%d;1H", i)
+// 		fmt.Fprintf(screen, "|")
+// 		fmt.Fprintf(screen, "\033[%d;%dH", i, maxX)
+// 		fmt.Fprintf(screen, "|")
+// 	}
+// }
 
 func seprator() {
 	maxX, maxY := termSize()
@@ -83,9 +83,9 @@ func seprator() {
 	}
 }
 
-func resetColor() {
-	fmt.Fprintf(screen, "\u001b[0m")
-}
+// func resetColor() {
+// 	fmt.Fprintf(screen, "\u001b[0m")
+// }
 
 func stripString(str string) string {
 	maxX, _ := termSize()

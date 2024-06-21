@@ -95,11 +95,16 @@ func play(songNum int) *Player {
 
 func handleArgs() {
 	if len(os.Args) == 1 {
-		addFolder(".", &playlist)
+		err := addFolder(".", &playlist)
+		if err != nil {
+			log.Default().Println(err)
+		}
 	} else
 	// check if it's files or a folder
 	if os.Args[1] == "." {
-		addFolder(".", &playlist)
+		if err := addFolder(".", &playlist); err != nil {
+			log.Default().Println(err)
+		}
 	} else {
 		for i, v := range os.Args {
 			if i == 0 {
