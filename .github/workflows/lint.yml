@@ -18,7 +18,7 @@ jobs:
         uses: golangci/golangci-lint-action@v6.0.1
         with:
           # The version of golangci-lint to use.
-          version: 6.0.1 # optional
+          version: v6.0.1 # optional
           # The mode to install golangci-lint. It can be 'binary' or 'goinstall'.
           install-mode: binary # optional, default is binary
           # golangci-lint working directory, default is project root
