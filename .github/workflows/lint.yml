@@ -12,6 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+      
       - name: Golangci-lint
         # You may pin to the exact commit or the version.
         # uses: golangci/golangci-lint-action@a4f60bb28d35aeee14e6880718e0c85ff1882e64
@@ -20,7 +26,7 @@ jobs:
           # The version of golangci-lint to use.
           version: v6.0.1 # optional
           # The mode to install golangci-lint. It can be 'binary' or 'goinstall'.
-          install-mode: binary # optional, default is binary
+          install-mode: goinstall # optional, default is binary
           # golangci-lint working directory, default is project root
           # working-directory: # optional
           # the token is used for fetching patch of a pull request to show only new issues
