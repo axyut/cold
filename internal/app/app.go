@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 
 	c "github.com/axyut/playgo/internal/config"
@@ -39,11 +40,11 @@ top:
 		}
 		player.File.Close()
 
-		playedList = appendOnlyOriginal(playedList, playlist[songs.CurrentSong])
-		played := fmt.Sprintf("Played %s", playlist[songs.CurrentSong])
+		playedList = appendOnlyOriginal(playedList, playlist.List[songs.CurrentSong].Name)
+		played := fmt.Sprintf("Played %s", playlist.List[songs.CurrentSong].Name)
 		notify(played)
 
-		if len(playedList) == len(playlist) {
+		if len(playedList) == len(playlist.List) {
 			playedList = []string{}
 			completedPlaylist++
 			break
@@ -61,11 +62,13 @@ top:
 
 // seek, next , prevous, pause, play, settings
 func play(songNum int, cfg *c.Config) *Player {
-	mp3File := playlist[songNum]
-	file, err := os.Open(mp3File)
+	musicFile := playlist.List[songNum]
+	path := filepath.Join(musicFile.Path, musicFile.Name)
+	fmt.Println("Playing: ", path)
+	file, err := os.Open(path)
 	if err != nil {
 		log.Print(err)
-		playlist = Remove(playlist, songNum)
+		// playlist = Remove(playlist.List, songNum)
 		return nil
 	}
 
@@ -93,12 +96,12 @@ func play(songNum int, cfg *c.Config) *Player {
 }
 
 func handleConfig(config c.Config) {
-	err := addFolder(config.General.StartDir, &playlist)
+	playlist, err := addFolder(config.General.StartDir)
 	if err != nil {
 		log.Default().Println(err)
 	}
 	// check if it's files or a folder
 	if config.Music.Shuffle {
-		shufflePlaylist(&playlist)
+		shufflePlaylist(playlist)
 	}
 }

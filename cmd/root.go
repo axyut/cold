@@ -24,8 +24,22 @@ skip, and repeat songs.`,
 	ValidArgs: []string{"."},
 	Args:      cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		// If logging is enabled, logs will be output to debug.log.
+		// if enableLogging {
+		// 	f, err := tea.LogToFile("debug.log", "debug")
+		// 	if err != nil {
+		// 		log.Fatal(err)
+		// 	}
 
-		config, err := config.Parse()
+		// 	defer func() {
+		// 		if err = f.Close(); err != nil {
+		// 			log.Fatal(err)
+		// 		}
+		// 	}()
+		// }
+
+		setting := getTempSettings(cmd, args)
+		config, err := config.Parse(setting)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -46,9 +60,63 @@ func Execute() {
 func init() {
 	rootCmd.AddCommand(updateCmd)
 
-	rootCmd.PersistentFlags().String("start-dir", ".", "Starting directory for Playgo")
-	rootCmd.PersistentFlags().String("include", "", "File/s to play")
-	rootCmd.PersistentFlags().String("exclude", "", "File/s to ignore")
-	rootCmd.PersistentFlags().String("renderer", "raw", "Application Renderer")
-	rootCmd.PersistentFlags().Bool("show-icons", true, "Show icons")
+	rootCmd.PersistentFlags().StringArrayP("exclude", "e", []string{}, "File/s to ignore while playing files in directory")
+	rootCmd.PersistentFlags().StringArrayP("include", "i", []string{}, "Include File/s to play with files in directory")
+	rootCmd.PersistentFlags().StringArrayP("playonly", "p", []string{}, "Only File/s to play")
+	rootCmd.PersistentFlags().StringP("renderer", "r", "raw", "Application Renderer [raw, tea]")
+	rootCmd.PersistentFlags().Bool("icons", true, "Show icons [true/false]")
+	rootCmd.PersistentFlags().Bool("hidden", false, "Play Hidden Files [true/false]")
+	rootCmd.PersistentFlags().Bool("logging", false, "Enable logging player [true/false]")
+}
+
+func getTempSettings(cmd *cobra.Command, args []string) *config.TempSetting {
+	startDir := ""
+	if len(args) > 0 {
+		// fmt.Println("Start Dir: ", args[0])
+		startDir = args[0]
+	}
+
+	enableLogging, err := cmd.Flags().GetBool("logging")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	renderer, err := cmd.Flags().GetString("renderer")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	showIcons, err := cmd.Flags().GetBool("icons")
+	if err != nil {
+		log.Fatal(err)
+	}
+	showHidden, err := cmd.Flags().GetBool("hidden")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	exclude, err := cmd.Flags().GetStringArray("exclude")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	include, err := cmd.Flags().GetStringArray("include")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	playOnly, err := cmd.Flags().GetStringArray("playonly")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &config.TempSetting{
+		StartDir:      startDir,
+		EnableLogging: enableLogging,
+		Renderer:      renderer,
+		ShowIcons:     showIcons,
+		ShowHidden:    showHidden,
+		Exclude:       exclude,
+		Include:       include,
+		PlayOnly:      playOnly,
+	}
 }

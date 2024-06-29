@@ -6,16 +6,17 @@ import (
 	"time"
 
 	c "github.com/axyut/playgo/internal/config"
+	"github.com/axyut/playgo/internal/types"
 )
 
 type TUI struct {
-	Playlist *[]string
+	Playlist *types.Playlist
 	Notifs   *[]string
 	Songs    *c.Activelist
 	Setting  *c.Config
 }
 
-func NewUI(playlist *[]string, notifs *[]string, songs *c.Activelist, setting *c.Config) *TUI {
+func NewUI(playlist *types.Playlist, notifs *[]string, songs *c.Activelist, setting *c.Config) *TUI {
 	return &TUI{
 		Playlist: playlist,
 		Notifs:   notifs,
@@ -29,7 +30,7 @@ var maxX, maxY = termSize()
 func (tui TUI) Display() {
 	music := tui.Setting.Music
 	for {
-		playlist := *tui.Playlist
+		playlist := (*tui.Playlist).List
 		notifs := *tui.Notifs
 		currentSong := tui.Songs.CurrentSong
 		Shuffle := music.Shuffle
@@ -53,7 +54,7 @@ func (tui TUI) Display() {
 	}
 }
 
-func displayPrevSongs(playlist []string, currentSong int) {
+func displayPrevSongs(playlist []types.Song, currentSong int) {
 	// Playlist
 	// TODO: will make playlist scrollable with cursor later on
 	// will later implement this to show all playlist when certain key pressed.
@@ -72,17 +73,17 @@ func displayPrevSongs(playlist []string, currentSong int) {
 			}
 		}
 		moveCursor(pos{2, (maxY / 4) - i})
-		color.Magenta("%s", stripString(playlist[prev]))
+		color.Magenta("%s", stripString(playlist[prev].Name))
 	}
 }
 
-func currentlyPlaying(playlist []string, currentSong int) {
+func currentlyPlaying(playlist []types.Song, currentSong int) {
 	moveCursor(pos{2, maxY / 4})
 	color.Reversed()
-	color.Cyan(fmt.Sprintf("⏯️%s", stripString(playlist[currentSong])))
+	color.Cyan(fmt.Sprintf("⏯️%s", stripString(playlist[currentSong].Name)))
 }
 
-func displayNextSongs(playlist []string, currentSong int) {
+func displayNextSongs(playlist []types.Song, currentSong int) {
 	totalNextSongs := 6
 	for j := 1; j <= totalNextSongs; j++ {
 		next := currentSong + j
@@ -92,7 +93,7 @@ func displayNextSongs(playlist []string, currentSong int) {
 			}
 		}
 		moveCursor(pos{2, (maxY / 4) + j})
-		color.Blue("%s", stripString(playlist[next]))
+		color.Blue("%s", stripString(playlist[next].Name))
 	}
 
 }
@@ -109,11 +110,11 @@ func displaySettings(Shuffle, RepeatSong, RepeatPlaylist bool) {
 	fmt.Fprintf(screen, "[y] Shuffle: %t", Shuffle)
 }
 
-func displayNowPlaying(playlist []string, currentSong int) {
+func displayNowPlaying(playlist []types.Song, currentSong int) {
 	moveCursor(pos{maxX / 2, 1})
 	fmt.Fprintf(screen, "NOW PLAYING")
 	moveCursor(pos{maxX / 2, 3})
-	fmt.Fprintf(screen, "%s", stripString(playlist[currentSong]))
+	fmt.Fprintf(screen, "%s", stripString(playlist[currentSong].Name))
 	moveCursor(pos{maxX / 2, 4})
 	fmt.Fprintf(screen, "0:00 -------------------- 3:14s")
 }
@@ -135,7 +136,7 @@ func (tui TUI) DisplayStats(playedList []string, completedPlaylist int) {
 	showCursor()
 
 	moveCursor(pos{2, 2})
-	fmt.Fprintf(screen, "Played         : %d song(s).", len(playedList)+(len(*tui.Playlist)*completedPlaylist))
+	fmt.Fprintf(screen, "Played         : %d song(s).", len(playedList)+(len(tui.Playlist.List)*completedPlaylist))
 	moveCursor(pos{2, 3})
 	fmt.Fprintf(screen, "Played list    : %d time(s).", completedPlaylist)
 	moveCursor(pos{2, 4})

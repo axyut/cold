@@ -16,7 +16,8 @@ type Config struct {
 	Player   playerSettings  `yaml:"player"`
 	Music    musicSettings   `yaml:"music"`
 	Renderer string          `yaml:"renderer"`
-	user     userSetting     `yaml:"user_setting"`
+	User     userSetting     `yaml:"user"`
+	Temp     TempSetting     `yaml:"temp"`
 }
 
 type generalSettings struct {
@@ -40,6 +41,17 @@ type userSetting struct {
 	UseDB bool `yaml:"use_db"`
 }
 
+type TempSetting struct {
+	StartDir      string   `yaml:"start_dir"`
+	ShowIcons     bool     `yaml:"show_icons"`
+	ShowHidden    bool     `yaml:"show_hidden"`
+	Exclude       []string `yaml:"exclude"`
+	PlayOnly      []string `yaml:"playonly"`
+	Include       []string `yaml:"include"`
+	Renderer      string   `yaml:"renderer"`
+	EnableLogging bool     `yaml:"enable_logging"`
+}
+
 // configError represents an error that occurred while parsing the config file.
 type configError struct {
 	configDir string
@@ -56,7 +68,7 @@ func initParser() ConfigParser {
 }
 
 // ParseConfig parses the config file and returns the config.
-func Parse() (Config, error) {
+func Parse(temp *TempSetting) (Config, error) {
 	var config Config
 	var err error
 
@@ -70,6 +82,10 @@ func Parse() (Config, error) {
 	config, err = parser.readConfigFile(*configFilePath)
 	if err != nil {
 		return config, parsingError{err: err}
+	}
+
+	if temp.StartDir != "" {
+		config.General.StartDir = temp.StartDir
 	}
 
 	return config, nil
@@ -120,7 +136,7 @@ func (parser ConfigParser) getDefaultConfig() Config {
 
 		General: generalSettings{
 			showIcons:     true,
-			StartDir:      ".", // if not found any music files, plays from ~/Music/.
+			StartDir:      "~/Music/",
 			EnableLogging: true,
 		},
 		Player: playerSettings{
@@ -133,7 +149,7 @@ func (parser ConfigParser) getDefaultConfig() Config {
 			Shuffle:        true,
 		},
 		Renderer: "raw",
-		user: userSetting{
+		User: userSetting{
 			UseDB: false,
 		},
 	}

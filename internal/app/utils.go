@@ -10,6 +10,7 @@ import (
 
 	c "github.com/axyut/playgo/internal/config"
 	"github.com/axyut/playgo/internal/tui"
+	"github.com/axyut/playgo/internal/types"
 	"github.com/mattn/go-tty"
 
 	"github.com/ebitengine/oto/v3"
@@ -25,8 +26,10 @@ var op = &oto.NewContextOptions{
 	Format:       oto.FormatSignedInt16LE,
 }
 var otoCtx, readyChan, otoErr = oto.NewContext(op)
-var playlist []string
+
+// var playlist []string
 var playedList []string
+var playlist = types.Playlist{}
 
 // var favorites []string
 // var timer int
@@ -52,40 +55,54 @@ var songs = c.Activelist{
 // 	Test: "t",
 // }
 
-func shufflePlaylist(playlist *[]string) {
-	list := *playlist
+func shufflePlaylist(playlist *types.Playlist) {
+	list := playlist.List
 	rand.Shuffle(len(list), func(i, j int) {
 		list[i], list[j] = list[j], list[i]
 	})
 }
 
-func serializePlaylist(playlist *[]string) {
+func serializePlaylist(path string) {
 	// just doing addFolder for now which doesn't cover when individual files opened in command $playgo a.mp3 b.mp3
-	if err := addFolder(".", playlist); err != nil {
+	if err, _ := addFolder(path); err != nil {
 		log.Default().Println(err)
 	}
 }
 
-func addFolder(path string, playlist *[]string) error {
+func addFolder(path string) (*types.Playlist, error) {
+	// get full path
+	if path == "." {
+		path, _ = filepath.Abs(path)
+	}
+	fmt.Println("Adding Folder", path)
 	fileInfos, err := os.ReadDir(path)
 	if err != nil {
-		log.Println("Couldn't Read from Current Directory!")
-		return err
+		log.Println("Couldn't Read from ", path, " Directory!")
+		return &playlist, err
 	}
 	for _, file := range fileInfos {
 		ext := filepath.Ext(file.Name())
-
 		if ext == ".mp3" {
 			// path, _ := filepath.Abs(filepath.Dir(file.Name()))
-			*playlist = append(*playlist, file.Name())
+			song := types.Song{
+				Name: file.Name(),
+				Path: path,
+			}
+			playlist.List = append(playlist.List, song)
 		}
 	}
-
-	if len(*playlist) == 0 {
+	home, _ := os.UserHomeDir()
+	musicPath := filepath.Join(home + "/Music/")
+	fmt.Println("Music Path: ", musicPath)
+	if len(playlist.List) == 0 && path == musicPath {
 		fmt.Println(c.Usage)
 		os.Exit(0)
+	} else if len(playlist.List) == 0 {
+		fmt.Println("No Music Files Found in the given path:", path, "Trying ~/Music/")
+		addFolder(musicPath)
 	}
-	return nil
+	// os.Exit(0)
+	return &playlist, nil
 }
 
 func Remove(slice []string, s int) []string {
@@ -146,7 +163,7 @@ func listenForKey(setting c.Config) {
 	}
 }
 
-func toogleSetting(str rune, list *[]string, setting *c.Config) {
+func toogleSetting(str rune, list *types.Playlist, setting *c.Config) {
 	suf, repS, repP := setting.Music.Shuffle, setting.Music.RepeatSong, setting.Music.RepeatPlaylist
 	switch str {
 	case 't':
@@ -160,7 +177,7 @@ func toogleSetting(str rune, list *[]string, setting *c.Config) {
 			shufflePlaylist(list)
 			notify("Shuffle On.")
 		} else {
-			serializePlaylist(list)
+			serializePlaylist(setting.General.StartDir)
 			notify("Shuffle Off.")
 		}
 	}
@@ -197,11 +214,11 @@ func notify(str string) {
 	Notifications = append([]string{str}, Notifications...)
 }
 
-func getSong(i int, playlist *[]string, setting c.Config) *c.Activelist {
+func getSong(i int, playlist *types.Playlist, setting c.Config) *c.Activelist {
 	var prevSong, curSong, nextSong int
 	prevSong = i - 1
 	curSong = i
-	if len(*playlist) == i+1 {
+	if len(playlist.List) == i+1 {
 		nextSong = i
 		if setting.Music.RepeatPlaylist {
 			nextSong = 0

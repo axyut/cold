@@ -1,11 +1,22 @@
-settings:
-  general:
-    start_dir: ~/Music
-    show_icons: true
-    enable_logging: false 
-  player:
+general:
+    start_dir: .
+    enable_logging: true
+player:
     shuffle: true
     repeat_playlist: true
-  music:
+music:
     repeat_song: false
-  renderer: raw # raw, bubbletea
+    repeat_playlist: true
+    shuffle: true
+renderer: raw
+user:
+    use_db: false
+temp:
+    start_dir: ""
+    show_icons: false
+    show_hidden: false
+    exclude: []
+    playonly: []
+    include: []
+    renderer: ""
+    enable_logging: false
