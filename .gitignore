@@ -21,7 +21,6 @@ go.work
 
 test.mp3
 test1.mp3
-playgo
 tmp/
 bin/
 .env

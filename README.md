@@ -17,19 +17,14 @@
 
 Play Music in terminal. Written in Go. Relatively feature-packed.
 
-### Built With
-
-- [Go](https://golang.org/)
-- [Mp3 Engine (go-mp3, oto)](https://github.com/ebitengine/oto/v3)
-
 ### Requirements
 
-- [Go](https://golang.org/)
-- Windows `go`
-- Debian `go libasound2-dev`
-- Mac
-- Arch
-- Fedora
+-   [Go](https://golang.org/)
+-   Windows `go`
+-   Debian `go libasound2-dev`
+-   Mac
+-   Arch
+-   Fedora
 
 ## Installation
 
@@ -47,30 +42,37 @@ curl ...install.sh
 
 ## Development
 
-- `go run . .` from the source
-- `GOOS=linux GOARCH=amd64 go build -o ~/go/bin/ .` build to your bin path.
-- `GOOS=linux GOARCH=amd64 go build . && sudo cp playgo /usr/local/bin/` build for the system.
-  - `GOOS=darwin GOARCH=amd64` Mac
-  - `GOOS=windows GOARCH=amd64` Windows
+-   `go run . .` from the source
+-   `GOOS=linux GOARCH=amd64 go build -o ~/go/bin/ .` build to your bin path.
+-   `GOOS=linux GOARCH=amd64 go build . && sudo cp playgo /usr/local/bin/` build for the system.
+    -   `GOOS=darwin GOARCH=amd64` Mac
+    -   `GOOS=windows GOARCH=amd64` Windows
 
 ## Features
 
-- [x] Plays Music.
-- [x] Light weight with minimum dependencies.
-- [ ] Controls.
-- [ ] Visualization.
+-   [x] Plays Music.
+-   [x] Light weight with minimum dependencies.
+-   [ ] Controls.
+-   [ ] Visualization.
 
 ## Themes
 
-- [ ] UI with [bubbletea](https://github.com/charmbracelet/bubbletea)
-- [x] Raw UI Build
+-   [ ] UI with [bubbletea](https://github.com/charmbracelet/bubbletea)
+-   [x] Raw UI Build
 
 ## Audio Engine
 
-- [x] [oto](https://github.com/ebitengine/oto/v3)
-- [x] [go-mp3](https://github.com/hajimehoshi/go-mp3)
-- [ ] [beep](https://github.com/faiface/beep)
-- [ ] [portaudio](https://github.com/gordonklaus/portaudio)
+-   [x] [oto](https://github.com/ebitengine/oto/v3)
+-   [x] [go-mp3](https://github.com/hajimehoshi/go-mp3)
+-   [ ] [beep](https://github.com/faiface/beep)
+-   [ ] [portaudio](https://github.com/gordonklaus/portaudio)
+
+### Built With
+
+-   [Go](https://golang.org/)
+-   [Mp3 Engine (go-mp3, oto)](https://github.com/ebitengine/oto/v3)
+-   [Cobra](https://github.com/spf13/cobra)
+-   UI with [bubbletea](https://github.com/charmbracelet/bubbletea)
 
 ## Usage
 
@@ -104,23 +106,23 @@ curl ...install.sh
 About settings...
 A config file will be generated when you first run `playgo`. Depending on your operating system it can be found in one of the following locations:
 
-- macOS: ~/Library/Application\ Support/playgo/config.yml
-- Linux: ~/.config/playgo/config.yml
-- Windows: C:\Users\me\AppData\Roaming\playgo\config.yml
+-   macOS: ~/Library/Application\ Support/playgo/config.yml
+-   Linux: ~/.config/playgo/config.yml
+-   Windows: C:\Users\me\AppData\Roaming\playgo\config.yml
 
 It will include the following default settings:
 
 ```yml
 setting:
-  general:
-    show_icons: true
-  player:
-    shuffle: true
-    repeat_playlist: true
-  music:
-    repeat_song: false
+    general:
+        show_icons: true
+    player:
+        shuffle: true
+        repeat_playlist: true
+    music:
+        repeat_song: false
 theme:
-  raw: true
+    raw: true
 ```
 
 ## Uninstalling
