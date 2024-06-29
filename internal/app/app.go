@@ -13,8 +13,9 @@ import (
 
 func StartPlaygo(cfg c.Config) {
 	handleConfig(cfg)
-	handleInterrupt()
 	go listenForKey(cfg)
+	ui := tui.NewUI(&playlist, &Notifications, &songs, &cfg)
+	handleInterrupt(ui, playedList, completedPlaylist)
 
 top:
 	for i := 0; ; i++ {
@@ -26,7 +27,7 @@ top:
 			continue
 		}
 
-		go tui.Display(&playlist, &Notifications, songs, &cfg)
+		go ui.Display()
 
 		for player.Music.IsPlaying() {
 			time.Sleep(time.Millisecond)
@@ -55,7 +56,7 @@ top:
 		notify("Restarting Playlist.")
 		goto top
 	}
-	tui.DisplayStats(playlist, playedList, completedPlaylist)
+	ui.DisplayStats(playedList, completedPlaylist)
 }
 
 // seek, next , prevous, pause, play, settings

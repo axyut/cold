@@ -11,11 +11,11 @@ import (
 
 type pos [2]int
 
-type Setting struct {
-	Shuffle        bool
-	RepeatSong     bool
-	RepeatPlaylist bool
-}
+// type Setting struct {
+// 	Shuffle        bool
+// 	RepeatSong     bool
+// 	RepeatPlaylist bool
+// }
 
 // type Activelist struct {
 // 	prevSong    int

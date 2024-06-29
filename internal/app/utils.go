@@ -92,7 +92,7 @@ func Remove(slice []string, s int) []string {
 	return append(slice[:s], slice[s+1:]...)
 }
 
-func handleInterrupt() {
+func handleInterrupt(ui *tui.TUI, playedList []string, completedPlaylist int) {
 	tui.HideCursor()
 
 	// handle CTRL C
@@ -101,7 +101,7 @@ func handleInterrupt() {
 
 	go func() {
 		for range c {
-			tui.DisplayStats(playlist, playedList, completedPlaylist)
+			ui.DisplayStats(playedList, completedPlaylist)
 		}
 	}()
 }
@@ -139,8 +139,8 @@ func listenForKey(setting c.Config) {
 				toogleSetting('t', &playlist, &setting)
 			case 'r': // repeat Song
 				toogleSetting('r', &playlist, &setting)
-			case 'x':
-				tui.DisplayStats(playlist, playedList, completedPlaylist)
+				// case 'x':
+				// 	tui.DisplayStats(playlist, playedList, completedPlaylist)
 			}
 		}
 	}

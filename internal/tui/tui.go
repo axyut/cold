@@ -8,14 +8,30 @@ import (
 	c "github.com/axyut/playgo/internal/config"
 )
 
+type TUI struct {
+	Playlist *[]string
+	Notifs   *[]string
+	Songs    *c.Activelist
+	Setting  *c.Config
+}
+
+func NewUI(playlist *[]string, notifs *[]string, songs *c.Activelist, setting *c.Config) *TUI {
+	return &TUI{
+		Playlist: playlist,
+		Notifs:   notifs,
+		Songs:    songs,
+		Setting:  setting,
+	}
+}
+
 var maxX, maxY = termSize()
 
-func Display(rplaylist *[]string, rnotifs *[]string, songs *c.Activelist, setting *c.Config) {
-	music := setting.Music
+func (tui TUI) Display() {
+	music := tui.Setting.Music
 	for {
-		playlist := *rplaylist
-		notifs := *rnotifs
-		currentSong := songs.CurrentSong
+		playlist := *tui.Playlist
+		notifs := *tui.Notifs
+		currentSong := tui.Songs.CurrentSong
 		Shuffle := music.Shuffle
 		RepeatSong := music.RepeatSong
 		RepeatPlaylist := music.RepeatPlaylist
@@ -114,12 +130,12 @@ func displayNotifications(notifs []string) {
 	}
 }
 
-func DisplayStats(playlist, playedList []string, completedPlaylist int) {
+func (tui TUI) DisplayStats(playedList []string, completedPlaylist int) {
 	clear()
 	showCursor()
 
 	moveCursor(pos{2, 2})
-	fmt.Fprintf(screen, "Played         : %d song(s).", len(playedList)+(len(playlist)*completedPlaylist))
+	fmt.Fprintf(screen, "Played         : %d song(s).", len(playedList)+(len(*tui.Playlist)*completedPlaylist))
 	moveCursor(pos{2, 3})
 	fmt.Fprintf(screen, "Played list    : %d time(s).", completedPlaylist)
 	moveCursor(pos{2, 4})
