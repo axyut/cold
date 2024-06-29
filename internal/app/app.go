@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
-	"strings"
 	"time"
 
 	c "github.com/axyut/playgo/internal/config"
@@ -13,22 +11,22 @@ import (
 	mp3 "github.com/axyut/playgo/pkg/mp3Decoder"
 )
 
-func StartPlaygo() {
-	handleArgs()
+func StartPlaygo(cfg c.Config) {
+	handleConfig(cfg)
 	handleInterrupt()
-	go listenForKey()
+	go listenForKey(cfg)
 
 top:
 	for i := 0; ; i++ {
 	repeatSameSong:
-		songs := getSong(i, &playlist, UserSetting)
+		songs := getSong(i, &playlist, cfg)
 
-		player := play(songs.CurrentSong)
+		player := play(songs.CurrentSong, &cfg)
 		if player == nil {
 			continue
 		}
 
-		go tui.Display(&playlist, &Notifications, songs, &UserSetting)
+		go tui.Display(&playlist, &Notifications, songs, &cfg)
 
 		for player.Music.IsPlaying() {
 			time.Sleep(time.Millisecond)
@@ -49,11 +47,11 @@ top:
 			completedPlaylist++
 			break
 		}
-		if UserSetting.RepeatSong {
+		if cfg.Music.RepeatSong {
 			goto repeatSameSong
 		}
 	}
-	if UserSetting.RepeatPlaylist {
+	if cfg.Music.RepeatPlaylist {
 		notify("Restarting Playlist.")
 		goto top
 	}
@@ -61,7 +59,7 @@ top:
 }
 
 // seek, next , prevous, pause, play, settings
-func play(songNum int) *Player {
+func play(songNum int, cfg *c.Config) *Player {
 	mp3File := playlist[songNum]
 	file, err := os.Open(mp3File)
 	if err != nil {
@@ -85,7 +83,7 @@ func play(songNum int) *Player {
 
 	newPlayer := Player{
 		otoPlayer,
-		UserSetting,
+		cfg,
 		file,
 		songNum,
 	}
@@ -93,52 +91,13 @@ func play(songNum int) *Player {
 	return &newPlayer
 }
 
-func handleArgs() {
-	if len(os.Args) == 1 {
-		err := addFolder(".", &playlist)
-		if err != nil {
-			log.Default().Println(err)
-		}
-	} else
-	// check if it's files or a folder
-	if os.Args[1] == "." {
-		if err := addFolder(".", &playlist); err != nil {
-			log.Default().Println(err)
-		}
-	} else {
-		for i, v := range os.Args {
-			if i == 0 {
-				continue
-			}
-			if loc := strings.Index(v, "-"); loc == 0 {
-				v = v[1:]
-				switch v {
-				default:
-					fmt.Println(c.Usage)
-				case flags.Test:
-					fmt.Println("Checking Players Health.")
-					//TODO: to pass all the tests
-					fmt.Println("OK!")
-				case flags.Help:
-					fmt.Println(c.Usage)
-				}
-				os.Exit(0)
-			}
-			// not mp3 file, then its path
-			// if loc := strings.Index(v, ".mp3"); loc == -1 {
-			// 	addFolder(v)
-			// 	continue
-			// }
-			file, err := os.Open(v)
-			if err != nil {
-				log.Fatal(err)
-			}
-			if ext := filepath.Ext(file.Name()); ext == ".mp3" {
-				playlist = append(playlist, v)
-			}
-		}
+func handleConfig(config c.Config) {
+	err := addFolder(config.General.StartDir, &playlist)
+	if err != nil {
+		log.Default().Println(err)
 	}
-	if UserSetting.Shuffle {
+	// check if it's files or a folder
+	if config.Music.Shuffle {
 		shufflePlaylist(&playlist)
 	}
 }

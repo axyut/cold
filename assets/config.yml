@@ -8,4 +8,4 @@ settings:
     repeat_playlist: true
   music:
     repeat_song: false
-  theme: raw # raw, bubbletea
+  renderer: raw # raw, bubbletea

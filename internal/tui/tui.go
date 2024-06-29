@@ -10,14 +10,15 @@ import (
 
 var maxX, maxY = termSize()
 
-func Display(rplaylist *[]string, rnotifs *[]string, songs *c.Activelist, UserSetting *c.UserSetting) {
+func Display(rplaylist *[]string, rnotifs *[]string, songs *c.Activelist, setting *c.Config) {
+	music := setting.Music
 	for {
 		playlist := *rplaylist
 		notifs := *rnotifs
 		currentSong := songs.CurrentSong
-		Shuffle := UserSetting.Shuffle
-		RepeatSong := UserSetting.RepeatSong
-		RepeatPlaylist := UserSetting.RepeatPlaylist
+		Shuffle := music.Shuffle
+		RepeatSong := music.RepeatSong
+		RepeatPlaylist := music.RepeatPlaylist
 
 		clear()
 		HideCursor()

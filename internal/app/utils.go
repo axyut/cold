@@ -10,11 +10,10 @@ import (
 
 	c "github.com/axyut/playgo/internal/config"
 	"github.com/axyut/playgo/internal/tui"
+	"github.com/mattn/go-tty"
 
 	"github.com/ebitengine/oto/v3"
-
 	// keypress listener
-	"github.com/mattn/go-tty"
 )
 
 var Notifications []string
@@ -36,16 +35,10 @@ var completedPlaylist int
 //type pos [2]int
 
 type Player struct {
-	Music       *oto.Player
-	UserSetting c.UserSetting
-	File        *os.File
-	Song        int
-}
-
-var UserSetting = c.UserSetting{
-	Shuffle:        true,
-	RepeatSong:     false, // if Shuffle false it's no use for RepeatSong to be true
-	RepeatPlaylist: true,
+	Music   *oto.Player
+	setting *c.Config
+	File    *os.File
+	Song    int
 }
 
 var songs = c.Activelist{
@@ -54,10 +47,10 @@ var songs = c.Activelist{
 	NextSong:    1,
 }
 
-var flags = c.Flag{
-	Help: "h",
-	Test: "t",
-}
+// var flags = c.Flag{
+// 	Help: "h",
+// 	Test: "t",
+// }
 
 func shufflePlaylist(playlist *[]string) {
 	list := *playlist
@@ -113,7 +106,7 @@ func handleInterrupt() {
 	}()
 }
 
-func listenForKey() {
+func listenForKey(setting c.Config) {
 	tty, err := tty.Open()
 	if err != nil {
 		panic(err)
@@ -141,11 +134,11 @@ func listenForKey() {
 			case 's': // volume down
 				notify("-- VOL")
 			case 'y': // shuffle
-				toogleSetting('y', &playlist, &UserSetting)
+				toogleSetting('y', &playlist, &setting)
 			case 't': // repeat playlist
-				toogleSetting('t', &playlist, &UserSetting)
+				toogleSetting('t', &playlist, &setting)
 			case 'r': // repeat Song
-				toogleSetting('r', &playlist, &UserSetting)
+				toogleSetting('r', &playlist, &setting)
 			case 'x':
 				tui.DisplayStats(playlist, playedList, completedPlaylist)
 			}
@@ -153,8 +146,8 @@ func listenForKey() {
 	}
 }
 
-func toogleSetting(str rune, list *[]string, UserSetting *c.UserSetting) {
-	suf, repS, repP := UserSetting.Shuffle, UserSetting.RepeatSong, UserSetting.RepeatPlaylist
+func toogleSetting(str rune, list *[]string, setting *c.Config) {
+	suf, repS, repP := setting.Music.Shuffle, setting.Music.RepeatSong, setting.Music.RepeatPlaylist
 	switch str {
 	case 't':
 		repP = !repP
@@ -171,11 +164,9 @@ func toogleSetting(str rune, list *[]string, UserSetting *c.UserSetting) {
 			notify("Shuffle Off.")
 		}
 	}
-	*UserSetting = c.UserSetting{
-		Shuffle:        suf,
-		RepeatSong:     repS,
-		RepeatPlaylist: repP,
-	}
+	setting.Music.Shuffle = suf
+	setting.Music.RepeatSong = repS
+	setting.Music.RepeatPlaylist = repP
 }
 
 // func UniqSong() (songNum int) {
@@ -206,13 +197,13 @@ func notify(str string) {
 	Notifications = append([]string{str}, Notifications...)
 }
 
-func getSong(i int, playlist *[]string, UserSetting c.UserSetting) *c.Activelist {
+func getSong(i int, playlist *[]string, setting c.Config) *c.Activelist {
 	var prevSong, curSong, nextSong int
 	prevSong = i - 1
 	curSong = i
 	if len(*playlist) == i+1 {
 		nextSong = i
-		if UserSetting.RepeatPlaylist {
+		if setting.Music.RepeatPlaylist {
 			nextSong = 0
 		}
 	} else {

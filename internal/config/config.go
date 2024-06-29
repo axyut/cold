@@ -1,66 +1,43 @@
 package config
 
 import (
-	"errors"
-	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
-
-type Activelist struct {
-	PrevSong    int
-	CurrentSong int
-	NextSong    int
-}
-
-type UserSetting struct {
-	Shuffle        bool
-	RepeatSong     bool
-	RepeatPlaylist bool
-}
-
-type Stats struct {
-	MinutesPlayed int
-	SongsPlayed   int
-}
-
-type Flag struct {
-	Help string
-	Test string
-}
 
 const AppDir = "playgo"
 const ConfigFileName = "config.yml"
 
 // Config represents the main config for the application.
 type Config struct {
-	Settings SettingsConfig `yaml:"settings"`
+	General  generalSettings `yaml:"general"`
+	Player   playerSettings  `yaml:"player"`
+	Music    musicSettings   `yaml:"music"`
+	Renderer string          `yaml:"renderer"`
+	user     userSetting     `yaml:"user_setting"`
 }
 
-// SettingsConfig struct represents the config for the settings.
-type SettingsConfig struct {
-	General GeneralSettings `yaml:"general"`
-	Player  PlayerSettings  `yaml:"player"`
-	Music   MusicSettings   `yaml:"music"`
-	Theme   string          `yaml:"theme"`
-}
-
-type GeneralSettings struct {
+type generalSettings struct {
 	showIcons     bool   `yaml:"show_icons"`
 	StartDir      string `yaml:"start_dir"`
 	EnableLogging bool   `yaml:"enable_logging"`
 }
 
-type PlayerSettings struct {
+type playerSettings struct {
 	Shuffle        bool `yaml:"shuffle"`
 	RepeatPlaylist bool `yaml:"repeat_playlist"`
 }
 
-type MusicSettings struct {
-	RepeatSong bool `yaml:"repeat_song"`
+type musicSettings struct {
+	RepeatSong     bool `yaml:"repeat_song"`
+	RepeatPlaylist bool `yaml:"repeat_playlist"`
+	Shuffle        bool `yaml:"shuffle"`
+}
+
+type userSetting struct {
+	UseDB bool `yaml:"use_db"`
 }
 
 // configError represents an error that occurred while parsing the config file.
@@ -73,75 +50,29 @@ type configError struct {
 // ConfigParser is the parser for the config file.
 type ConfigParser struct{}
 
-// getDefaultConfig returns the default config for the application.
-func (parser ConfigParser) getDefaultConfig() Config {
-	return Config{
-		Settings: SettingsConfig{
-			General: GeneralSettings{
-				showIcons:     true,
-				StartDir:      "~/Music/",
-				EnableLogging: true,
-			},
-			Player: PlayerSettings{
-				Shuffle:        true,
-				RepeatPlaylist: true,
-			},
-			Music: MusicSettings{
-				RepeatSong: false,
-			},
-			Theme: "raw",
-		},
-	}
+// initParser initializes the parser.
+func initParser() ConfigParser {
+	return ConfigParser{}
 }
 
-// getDefaultConfigYamlContents returns the default config file contents.
-func (parser ConfigParser) getDefaultConfigYamlContents() string {
-	defaultConfig := parser.getDefaultConfig()
-	yaml, _ := yaml.Marshal(defaultConfig)
+// ParseConfig parses the config file and returns the config.
+func Parse() (Config, error) {
+	var config Config
+	var err error
 
-	return string(yaml)
-}
+	parser := initParser()
 
-// Error returns the error message for when a config file is not found.
-func (e configError) Error() string {
-	return fmt.Sprintf(
-		`Couldn't find a config.yml configuration file.
-Create one under: %s
-Example of a config.yml file:
-%s
-For more info, go to https://github.com/axyut/playgo
-press q to exit.
-Original error: %v`,
-		path.Join(e.configDir, AppDir, ConfigFileName),
-		e.parser.getDefaultConfigYamlContents(),
-		e.err,
-	)
-}
-
-// writeDefaultConfigContents writes the default config file contents to the given file.
-func (parser ConfigParser) writeDefaultConfigContents(newConfigFile *os.File) error {
-	_, err := newConfigFile.WriteString(parser.getDefaultConfigYamlContents())
-
+	configFilePath, err := parser.getConfigFileOrCreateIfMissing()
 	if err != nil {
-		return err
+		return config, parsingError{err: err}
 	}
 
-	return nil
-}
-
-// createConfigFileIfMissing creates the config file if it doesn't exist.
-func (parser ConfigParser) createConfigFileIfMissing(configFilePath string) error {
-	if _, err := os.Stat(configFilePath); errors.Is(err, os.ErrNotExist) {
-		newConfigFile, err := os.OpenFile(configFilePath, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0666)
-		if err != nil {
-			return err
-		}
-
-		defer newConfigFile.Close()
-		return parser.writeDefaultConfigContents(newConfigFile)
+	config, err = parser.readConfigFile(*configFilePath)
+	if err != nil {
+		return config, parsingError{err: err}
 	}
 
-	return nil
+	return config, nil
 }
 
 // getConfigFileOrCreateIfMissing returns the config file path or creates the config file if it doesn't exist.
@@ -171,16 +102,6 @@ func (parser ConfigParser) getConfigFileOrCreateIfMissing() (*string, error) {
 	return &configFilePath, nil
 }
 
-// parsingError represents an error that occurred while parsing the config file.
-type parsingError struct {
-	err error
-}
-
-// Error represents an error that occurred while parsing the config file.
-func (e parsingError) Error() string {
-	return fmt.Sprintf("failed parsing config.yml: %v", e.err)
-}
-
 // readConfigFile reads the config file and returns the config.
 func (parser ConfigParser) readConfigFile(path string) (Config, error) {
 	config := parser.getDefaultConfig()
@@ -193,49 +114,27 @@ func (parser ConfigParser) readConfigFile(path string) (Config, error) {
 	return config, err
 }
 
-// initParser initializes the parser.
-func initParser() ConfigParser {
-	return ConfigParser{}
-}
+// getDefaultConfig returns the default config for the application.
+func (parser ConfigParser) getDefaultConfig() Config {
+	return Config{
 
-// ParseConfig parses the config file and returns the config.
-func ParseConfig() (Config, error) {
-	var config Config
-	var err error
-
-	parser := initParser()
-
-	configFilePath, err := parser.getConfigFileOrCreateIfMissing()
-	if err != nil {
-		return config, parsingError{err: err}
+		General: generalSettings{
+			showIcons:     true,
+			StartDir:      ".", // if not found any music files, plays from ~/Music/.
+			EnableLogging: true,
+		},
+		Player: playerSettings{
+			Shuffle:        true,
+			RepeatPlaylist: true,
+		},
+		Music: musicSettings{
+			RepeatSong:     false,
+			RepeatPlaylist: true,
+			Shuffle:        true,
+		},
+		Renderer: "raw",
+		user: userSetting{
+			UseDB: false,
+		},
 	}
-
-	config, err = parser.readConfigFile(*configFilePath)
-	if err != nil {
-		return config, parsingError{err: err}
-	}
-
-	return config, nil
 }
-
-const Usage = `Usage
-## flags
-play files                  - $playgo <file.mp3> <file2.mp3>
-play all music in folder    - $playgo / $playgo . / $playgo ~/Music/path
-help                        - $playgo -h
-test condition/health       - $playgo -t
-## while playing
-x - quit player
-p - Play/Pause
-
-q - seek backward 10s
-e - seek forward 10s
-
-w - Increase Volume by 5%
-a - play previous song
-s - Decrease Volume by 5%
-d - play next song
-
-r - Toogle Repeat Song On/Off
-t - Toogle Repeat Playlist On/Off
-y - Toogle Shuffle On/Off`
