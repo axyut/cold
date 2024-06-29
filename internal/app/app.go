@@ -96,10 +96,25 @@ func play(songNum int, cfg *c.Config) *Player {
 }
 
 func handleConfig(config c.Config) {
+	// var err error
+	// var playlist *types.Playlist
+
 	playlist, err := addFolder(config.General.StartDir)
 	if err != nil {
 		log.Default().Println(err)
 	}
+	if len(config.Temp.Exclude) != 0 {
+		playlist = excludeFiles(playlist, config.Temp.Exclude)
+	}
+	if len(config.Temp.Include) != 0 {
+		playlist = includeFiles(playlist, config.Temp.Include)
+	}
+	if len(config.Temp.PlayOnly) != 0 {
+		playlist = addFiles(config.Temp.PlayOnly)
+	}
+
+	// fmt.Println("Playlist: ", playlist, config.Temp)
+	// os.Exit(0)
 	// check if it's files or a folder
 	if config.Music.Shuffle {
 		shufflePlaylist(playlist)

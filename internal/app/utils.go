@@ -88,12 +88,13 @@ func addFolder(path string) (*types.Playlist, error) {
 				Name: file.Name(),
 				Path: path,
 			}
+
 			playlist.List = append(playlist.List, song)
 		}
 	}
 	home, _ := os.UserHomeDir()
 	musicPath := filepath.Join(home + "/Music/")
-	fmt.Println("Music Path: ", musicPath)
+	// fmt.Println("Music Path: ", musicPath)
 	if len(playlist.List) == 0 && path == musicPath {
 		fmt.Println(c.Usage)
 		os.Exit(0)
@@ -103,10 +104,6 @@ func addFolder(path string) (*types.Playlist, error) {
 	}
 	// os.Exit(0)
 	return &playlist, nil
-}
-
-func Remove(slice []string, s int) []string {
-	return append(slice[:s], slice[s+1:]...)
 }
 
 func handleInterrupt(ui *tui.TUI, playedList []string, completedPlaylist int) {
@@ -242,4 +239,60 @@ func appendOnlyOriginal(list []string, val string) (originalList []string) {
 	}
 	originalList = append(list, val)
 	return originalList
+}
+
+func addFiles(files []string) *types.Playlist {
+	playlist = types.Playlist{}
+	for _, file := range files {
+		ext := filepath.Ext(file)
+		if ext == ".mp3" {
+			path, _ := filepath.Abs(filepath.Dir(file))
+			playlist.List = append(playlist.List, types.Song{
+				Name: filepath.Base(file),
+				Path: path,
+			})
+		}
+	}
+	return &playlist
+}
+
+func excludeFiles(playlist *types.Playlist, exclude []string) *types.Playlist {
+	for i, file := range playlist.List {
+		full := filepath.Join(file.Path, file.Name)
+		if containsS(exclude, full) {
+			playlist.List = append(playlist.List[:i], playlist.List[i+1:]...)
+		}
+	}
+	return playlist
+}
+
+func containsS(arr []string, str string) bool {
+	for _, a := range arr {
+		if a == str {
+			return true
+		}
+	}
+	return false
+}
+
+func contains(arr []types.Song, str string) bool {
+	for _, a := range arr {
+		full := filepath.Join(a.Path, a.Name)
+		if full == str {
+			return true
+		}
+	}
+	return false
+}
+
+func includeFiles(playlist *types.Playlist, include []string) *types.Playlist {
+	for _, file := range include {
+		if !contains(playlist.List, file) {
+			playlist.List = append(playlist.List, types.Song{
+				Name: filepath.Base(file),
+				Path: filepath.Dir(file),
+			})
+		}
+	}
+	return playlist
 }

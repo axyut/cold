@@ -1,9 +1,10 @@
 /*
-Copyright © 2024 achyut koirala <axyut@outlook.com>
+Copyright © 2024 achyut koirala <axyut.github.io>
 */
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -20,9 +21,8 @@ var rootCmd = &cobra.Command{
 	Long: `A CLI Music Player that plays mp3 files from a directory, defaults to the current directory,
 if not found any music files, plays from ~/Music/. It provides a simple interface to play, pause,
 skip, and repeat songs.`,
-	Version:   "0.1.3",
-	ValidArgs: []string{"."},
-	Args:      cobra.MaximumNArgs(1),
+	Version: "0.1.3",
+	Args:    cobra.MaximumNArgs(3),
 	Run: func(cmd *cobra.Command, args []string) {
 		// If logging is enabled, logs will be output to debug.log.
 		// if enableLogging {
@@ -43,21 +43,17 @@ skip, and repeat songs.`,
 		if err != nil {
 			log.Fatal(err)
 		}
+		// fmt.Println("Config: ", config.Temp)
 		app.StartPlaygo(config)
 	},
-	Example: `playgo [directory]`,
+	Example: `playgo [directory]
+playgo . # if no audio files, defaults to config startDir
+playgo ~/Music -e a.mp3 -e b.mp3`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
-		os.Exit(1)
-	}
-}
-
-func init() {
 	rootCmd.AddCommand(updateCmd)
 
 	rootCmd.PersistentFlags().StringArrayP("exclude", "e", []string{}, "File/s to ignore while playing files in directory")
@@ -67,13 +63,20 @@ func init() {
 	rootCmd.PersistentFlags().Bool("icons", true, "Show icons [true/false]")
 	rootCmd.PersistentFlags().Bool("hidden", false, "Play Hidden Files [true/false]")
 	rootCmd.PersistentFlags().Bool("logging", false, "Enable logging player [true/false]")
+
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }
 
 func getTempSettings(cmd *cobra.Command, args []string) *config.TempSetting {
+	fmt.Println("Args: ", args)
 	startDir := ""
 	if len(args) > 0 {
 		// fmt.Println("Start Dir: ", args[0])
 		startDir = args[0]
+
 	}
 
 	enableLogging, err := cmd.Flags().GetBool("logging")
@@ -82,6 +85,7 @@ func getTempSettings(cmd *cobra.Command, args []string) *config.TempSetting {
 	}
 
 	renderer, err := cmd.Flags().GetString("renderer")
+	// log.Println("Renderer: ", renderer)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -87,6 +87,7 @@ func Parse(temp *TempSetting) (Config, error) {
 	if temp.StartDir != "" {
 		config.General.StartDir = temp.StartDir
 	}
+	config.Temp = *temp
 
 	return config, nil
 }
