@@ -1,0 +1,46 @@
+name: Release, Build inside Actions
+
+on:
+  push:
+    tags:
+      - 'v*'
+  release:
+    types: [created]
+  workflow_dispatch:
+
+
+permissions:
+    contents: write
+    packages: write
+
+jobs:
+  release-linux-amd64:
+    name: release linux/amd64
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install dependencies
+      run: sudo apt-get install libasound2-dev
+
+    strategy:
+      matrix:
+        # run : sudo apt-get install libasound2-dev
+        # build and publish in parallel: linux/386, linux/amd64, linux/arm64, windows/386, windows/amd64, darwin/amd64, darwin/arm64
+        goos: [linux, windows, darwin]
+        goarch: [amd64]
+        exclude:
+          - goarch: "386"
+            goos: darwin
+          - goarch: arm64
+            goos: windows
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: wangyoucao577/go-release-action@v1
+      with:
+        pre_command: apt update && apt install apt-utils libasound2-dev -y && ls /bin | grep pkg-config
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        extra_files: LICENSE

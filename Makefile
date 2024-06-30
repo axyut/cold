@@ -2,16 +2,17 @@
 NAME = playgo
 OS = linux
 ARCH = amd64
+VERSION := $(shell git describe --tags --abbrev=0)
 
 build:
-	@GOOS=linux GOARCH=amd64 go build -o bin/${NAME}-amd64-linux .
-	@GOOS=darwin GOARCH=amd64 go build -o bin/${NAME}-amd64-darwin .
-	@GOOS=windows GOARCH=amd64 go build -o bin/${NAME}-amd64-windows .
+	@GOOS=linux GOARCH=amd64 go build -o bin/${NAME}-amd64-linux-${VERSION} .
+	@GOOS=darwin GOARCH=amd64 go build -o bin/${NAME}-amd64-darwin-${VERSION} .
+	@GOOS=windows GOARCH=amd64 go build -o bin/${NAME}-amd64-windows-${VERSION} .
 
 build_arm:
-	GOOS=darwin GOARCH=arm64 go build -o bin/${NAME}-arm64-darwin .
-	GOOS=windows GOARCH=arm64 go build -o bin/${NAME}-arm64-windows .
-	GOOS=linux GOARCH=arm64 go build -o bin/${NAME}-arm64-linux .
+	GOOS=darwin GOARCH=arm64 go build -o bin/${NAME}-arm64-darwin-${VERSION} .
+	GOOS=windows GOARCH=arm64 go build -o bin/${NAME}-arm64-windows-${VERSION} .
+	GOOS=linux GOARCH=arm64 go build -o bin/${NAME}-arm64-linux-${VERSION} .
 
 clean:
 	rm -rf bin
@@ -23,7 +24,7 @@ dev:
 	@go run . 
 
 run: build
-	@bin/${NAME}-${ARCH}-${OS}
+	@bin/${NAME}-${ARCH}-${OS}-${VERSION}
 
 install:
 	@go mod tidy
@@ -31,4 +32,4 @@ install:
 lint:
 	golangci-lint run
 
-# all: build build_arm
+
