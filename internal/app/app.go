@@ -8,8 +8,8 @@ import (
 	"time"
 
 	c "github.com/axyut/playgo/internal/config"
-	"github.com/axyut/playgo/internal/tui"
 	mp3 "github.com/axyut/playgo/pkg/mp3Decoder"
+	"github.com/axyut/playgo/pkg/tui"
 )
 
 func StartPlaygo(cfg c.Config) {

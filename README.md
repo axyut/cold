@@ -53,6 +53,7 @@ curl ...install.sh
 -   [x] Plays Music.
 -   [x] Light weight with minimum dependencies.
 -   [ ] Controls.
+-   [ ] Stream, Radio
 -   [ ] Visualization.
 
 ## Themes
@@ -73,6 +74,7 @@ curl ...install.sh
 -   [Mp3 Engine (go-mp3, oto)](https://github.com/ebitengine/oto/v3)
 -   [Cobra](https://github.com/spf13/cobra)
 -   UI with [bubbletea](https://github.com/charmbracelet/bubbletea)
+-   [Go FM](https://github.com/ssnat/GoFM)
 
 ## Usage
 

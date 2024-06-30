@@ -22,7 +22,7 @@ var rootCmd = &cobra.Command{
 if not found any music files, plays from ~/Music/. It provides a simple interface to play, pause,
 skip, and repeat songs.`,
 	Version: "0.1.3",
-	Args:    cobra.MaximumNArgs(3),
+	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// If logging is enabled, logs will be output to debug.log.
 		// if enableLogging {
@@ -46,8 +46,8 @@ skip, and repeat songs.`,
 		// fmt.Println("Config: ", config.Temp)
 		app.StartPlaygo(config)
 	},
-	Example: `playgo [directory]
-playgo . # if no audio files, defaults to config startDir
+	Example: `playgo # no commands defaults to config's start directory
+playgo . # if no audio files, defaults to ~/Music/
 playgo ~/Music -e a.mp3 -e b.mp3`,
 }
 

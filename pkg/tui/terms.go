@@ -11,18 +11,6 @@ import (
 
 type pos [2]int
 
-// type Setting struct {
-// 	Shuffle        bool
-// 	RepeatSong     bool
-// 	RepeatPlaylist bool
-// }
-
-// type Activelist struct {
-// 	prevSong    int
-// 	currentSong int
-// 	nextSong    int
-// }
-
 var screen = bufio.NewWriter(os.Stdout)
 
 func HideCursor() {

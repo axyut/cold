@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 
 	c "github.com/axyut/playgo/internal/config"
-	"github.com/axyut/playgo/internal/tui"
 	"github.com/axyut/playgo/internal/types"
+	"github.com/axyut/playgo/pkg/tui"
 	"github.com/mattn/go-tty"
 
 	"github.com/ebitengine/oto/v3"
