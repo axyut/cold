@@ -10,6 +10,8 @@ jobs:
   build_and_release:
     name: Build for Multiple Platforms and Create Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout Code
@@ -34,6 +36,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "bin/*"
-          token: ${{ secrets.GIT_TOKEN }}
+          token: ${{ github.token }}
           draft: true
 
