@@ -135,6 +135,7 @@ If installed with `go install` remove bin file from your go bin path. If not set
 [project structure](https://github.com/golang-standards/project-layout/blob/master/test/README.md)
 [github actions trigger](https://github.com/termkit/gama?tab=readme-ov-file)
 [commands parser](https://github.com/alecthomas/kingpin)
+[go releaser](https://github.com/wangyoucao577/go-release-action)
 setup go build command with test mp3 files
 
 git tag v0.1.1

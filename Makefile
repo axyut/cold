@@ -32,4 +32,7 @@ install:
 lint:
 	golangci-lint run
 
-
+git:# make git m="your message"
+	git add .
+	git commit -m "$(m)"
+	git push

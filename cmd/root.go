@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/axyut/playgo/internal/app"
+	"github.com/axyut/playgo/internal/booTea"
 	"github.com/axyut/playgo/internal/config"
 
 	"github.com/spf13/cobra"
@@ -43,8 +44,11 @@ skip, and repeat songs.`,
 		if err != nil {
 			log.Fatal(err)
 		}
-		// fmt.Println("Config: ", config.Temp)
-		app.StartPlaygo(config)
+		if config.Renderer == "tea" {
+			booTea.RunBubbleTUI()
+		} else {
+			app.StartPlaygo(config)
+		}
 	},
 	Example: `playgo # no commands defaults to config's start directory
 playgo . # if no audio files, defaults to ~/Music/
@@ -71,7 +75,6 @@ func Execute() {
 }
 
 func getTempSettings(cmd *cobra.Command, args []string) *config.TempSetting {
-	fmt.Println("Args: ", args)
 	startDir := ""
 	if len(args) > 0 {
 		// fmt.Println("Start Dir: ", args[0])
