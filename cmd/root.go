@@ -9,8 +9,8 @@ import (
 	"os"
 
 	"github.com/axyut/playgo/internal/app"
-	"github.com/axyut/playgo/internal/booTea"
 	"github.com/axyut/playgo/internal/config"
+	"github.com/axyut/playgo/internal/types"
 
 	"github.com/spf13/cobra"
 )
@@ -44,11 +44,8 @@ skip, and repeat songs.`,
 		if err != nil {
 			log.Fatal(err)
 		}
-		if config.Renderer == "tea" {
-			booTea.RunBubbleTUI()
-		} else {
-			app.StartPlaygo(config)
-		}
+
+		app.StartApp(config)
 	},
 	Example: `playgo # no commands defaults to config's start directory
 playgo . # if no audio files, defaults to ~/Music/
@@ -63,7 +60,7 @@ func Execute() {
 	rootCmd.PersistentFlags().StringArrayP("exclude", "e", []string{}, "File/s to ignore while playing files in directory")
 	rootCmd.PersistentFlags().StringArrayP("include", "i", []string{}, "Include File/s to play with files in directory")
 	rootCmd.PersistentFlags().StringArrayP("playonly", "p", []string{}, "Only File/s to play")
-	rootCmd.PersistentFlags().StringP("renderer", "r", "raw", "Application Renderer [raw, tea]")
+	rootCmd.PersistentFlags().StringP("renderer", "r", "", "Application Renderer [raw, tea]")
 	rootCmd.PersistentFlags().Bool("icons", true, "Show icons [true/false]")
 	rootCmd.PersistentFlags().Bool("hidden", false, "Play Hidden Files [true/false]")
 	rootCmd.PersistentFlags().Bool("logging", false, "Enable logging player [true/false]")
@@ -74,7 +71,7 @@ func Execute() {
 	}
 }
 
-func getTempSettings(cmd *cobra.Command, args []string) *config.TempSetting {
+func getTempSettings(cmd *cobra.Command, args []string) *types.TempSetting {
 	startDir := ""
 	if len(args) > 0 {
 		// fmt.Println("Start Dir: ", args[0])
@@ -116,7 +113,7 @@ func getTempSettings(cmd *cobra.Command, args []string) *config.TempSetting {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &config.TempSetting{
+	return &types.TempSetting{
 		StartDir:      startDir,
 		EnableLogging: enableLogging,
 		Renderer:      renderer,

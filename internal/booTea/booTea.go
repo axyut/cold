@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/axyut/playgo/internal/types"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
@@ -66,7 +67,7 @@ func (m model) View() string {
 	return str
 }
 
-func RunBubbleTUI() {
+func RunBubbleTUI(config types.Config) {
 	p := tea.NewProgram(initialModel())
 	if _, err := p.Run(); err != nil {
 		fmt.Println(err)

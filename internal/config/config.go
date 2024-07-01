@@ -4,53 +4,12 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/axyut/playgo/internal/types"
 	"gopkg.in/yaml.v3"
 )
 
 const AppDir = "playgo"
 const ConfigFileName = "config.yml"
-
-// Config represents the main config for the application.
-type Config struct {
-	General  generalSettings `yaml:"general"`
-	Player   playerSettings  `yaml:"player"`
-	Music    musicSettings   `yaml:"music"`
-	Renderer string          `yaml:"renderer"`
-	User     userSetting     `yaml:"user"`
-	Temp     TempSetting     `yaml:"temp"`
-}
-
-type generalSettings struct {
-	showIcons     bool   `yaml:"show_icons"`
-	StartDir      string `yaml:"start_dir"`
-	EnableLogging bool   `yaml:"enable_logging"`
-}
-
-type playerSettings struct {
-	Shuffle        bool `yaml:"shuffle"`
-	RepeatPlaylist bool `yaml:"repeat_playlist"`
-}
-
-type musicSettings struct {
-	RepeatSong     bool `yaml:"repeat_song"`
-	RepeatPlaylist bool `yaml:"repeat_playlist"`
-	Shuffle        bool `yaml:"shuffle"`
-}
-
-type userSetting struct {
-	UseDB bool `yaml:"use_db"`
-}
-
-type TempSetting struct {
-	StartDir      string   `yaml:"start_dir"`
-	ShowIcons     bool     `yaml:"show_icons"`
-	ShowHidden    bool     `yaml:"show_hidden"`
-	Exclude       []string `yaml:"exclude"`
-	PlayOnly      []string `yaml:"playonly"`
-	Include       []string `yaml:"include"`
-	Renderer      string   `yaml:"renderer"`
-	EnableLogging bool     `yaml:"enable_logging"`
-}
 
 // configError represents an error that occurred while parsing the config file.
 type configError struct {
@@ -68,8 +27,8 @@ func initParser() ConfigParser {
 }
 
 // ParseConfig parses the config file and returns the config.
-func Parse(temp *TempSetting) (Config, error) {
-	var config Config
+func Parse(temp *types.TempSetting) (types.Config, error) {
+	var config types.Config
 	var err error
 
 	parser := initParser()
@@ -83,11 +42,23 @@ func Parse(temp *TempSetting) (Config, error) {
 	if err != nil {
 		return config, parsingError{err: err}
 	}
-
+	config.Temp = *temp
+	// log.Println("config: ", config)
 	if temp.StartDir != "" {
 		config.General.StartDir = temp.StartDir
 	}
-	config.Temp = *temp
+	if temp.Renderer == "raw" || temp.Renderer == "tea" {
+		config.Renderer = temp.Renderer
+	}
+	if !temp.ShowIcons {
+		config.General.ShowIcons = temp.ShowIcons
+	}
+	if temp.EnableLogging {
+		config.General.EnableLogging = temp.EnableLogging
+	}
+	if temp.ShowHidden {
+		config.General.ShowHidden = temp.ShowHidden
+	}
 
 	return config, nil
 }
@@ -120,7 +91,7 @@ func (parser ConfigParser) getConfigFileOrCreateIfMissing() (*string, error) {
 }
 
 // readConfigFile reads the config file and returns the config.
-func (parser ConfigParser) readConfigFile(path string) (Config, error) {
+func (parser ConfigParser) readConfigFile(path string) (types.Config, error) {
 	config := parser.getDefaultConfig()
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -128,29 +99,57 @@ func (parser ConfigParser) readConfigFile(path string) (Config, error) {
 	}
 
 	err = yaml.Unmarshal((data), &config)
+	parser.sanitizeConfig(&config)
 	return config, err
 }
 
-// getDefaultConfig returns the default config for the application.
-func (parser ConfigParser) getDefaultConfig() Config {
-	return Config{
+func (parser ConfigParser) sanitizeConfig(config *types.Config) {
+	if config.General.StartDir == "" {
+		config.General.StartDir = "~/Music/"
+	}
+	if config.Renderer != "tea" && config.Renderer != "raw" {
+		config.Renderer = "tea"
+	}
+	// type check gaera kaam xaina kina ki yaml.Unmarshal le type check garxa
+	// if fmt.Sprintf("%T", config.General.showIcons) != "bool" {
+	// 	config.General.showIcons = true
+	// }
+	// if fmt.Sprintf("%T", config.General.EnableLogging) != "bool" {
+	// 	config.General.EnableLogging = false
+	// }
+	// if fmt.Sprintf("%T", config.Player.Shuffle) != "bool" {
+	// 	config.Player.Shuffle = true
+	// }
+	// if fmt.Sprintf("%T", config.Player.RepeatPlaylist) != "bool" {
+	// 	config.Player.RepeatPlaylist = true
+	// }
+	// if fmt.Sprintf("%T", config.Music.RepeatSong) != "bool" {
+	// 	config.Music.RepeatSong = false
+	// }
 
-		General: generalSettings{
-			showIcons:     true,
+}
+
+// getDefaultConfig returns the default config for the application.
+func (parser ConfigParser) getDefaultConfig() types.Config {
+	return types.Config{
+
+		General: types.GeneralSettings{
+			ShowIcons:     true,
+			ShowHidden:    false,
 			StartDir:      "~/Music/",
-			EnableLogging: true,
+			EnableLogging: false,
 		},
-		Player: playerSettings{
+		Player: types.PlayerSettings{
 			Shuffle:        true,
 			RepeatPlaylist: true,
 		},
-		Music: musicSettings{
+		Music: types.MusicSettings{
 			RepeatSong:     false,
 			RepeatPlaylist: true,
 			Shuffle:        true,
 		},
-		Renderer: "raw",
-		User: userSetting{
+		Renderer: "tea",
+		User: types.UserSetting{
 			UseDB: false,
 		},
 	}

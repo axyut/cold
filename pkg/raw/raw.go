@@ -1,26 +1,25 @@
-package tui
+package raw
 
 import (
 	"fmt"
 	"os"
+	"os/signal"
 	"time"
 
-	c "github.com/axyut/playgo/internal/config"
 	"github.com/axyut/playgo/internal/types"
 )
 
 type TUI struct {
 	Playlist *types.Playlist
 	Notifs   *[]string
-	Songs    *c.Activelist
-	Setting  *c.Config
+	Songs    *types.Activelist
+	Setting  *types.Config
 }
 
-func NewUI(playlist *types.Playlist, notifs *[]string, songs *c.Activelist, setting *c.Config) *TUI {
+func NewUI(playlist *types.Playlist, notifs *[]string, setting *types.Config) *TUI {
 	return &TUI{
 		Playlist: playlist,
 		Notifs:   notifs,
-		Songs:    songs,
 		Setting:  setting,
 	}
 }
@@ -32,7 +31,7 @@ func (tui TUI) Display() {
 	for {
 		playlist := (*tui.Playlist).List
 		notifs := *tui.Notifs
-		currentSong := tui.Songs.CurrentSong
+		currentSong := tui.Playlist.CurrentSong
 		Shuffle := music.Shuffle
 		RepeatSong := music.RepeatSong
 		RepeatPlaylist := music.RepeatPlaylist
@@ -54,6 +53,20 @@ func (tui TUI) Display() {
 	}
 }
 
+func (ui TUI) HandleInterrupt(playedList []string, completedPlaylist int) {
+	HideCursor()
+
+	// handle CTRL C
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
+	go func() {
+		for range c {
+			ui.DisplayStats(playedList, completedPlaylist)
+		}
+	}()
+}
+
 func displayPrevSongs(playlist []types.Song, currentSong int) {
 	// Playlist
 	// TODO: will make playlist scrollable with cursor later on
@@ -73,14 +86,14 @@ func displayPrevSongs(playlist []types.Song, currentSong int) {
 			}
 		}
 		moveCursor(pos{2, (maxY / 4) - i})
-		color.Magenta("%s", stripString(playlist[prev].Name))
+		color.Magenta(stripString(playlist[prev].Name))
 	}
 }
 
 func currentlyPlaying(playlist []types.Song, currentSong int) {
 	moveCursor(pos{2, maxY / 4})
 	color.Reversed()
-	color.Cyan(fmt.Sprintf("⏯️%s", stripString(playlist[currentSong].Name)))
+	color.Cyan(fmt.Sprintf("⏯️ %s", stripString(playlist[currentSong].Name)))
 }
 
 func displayNextSongs(playlist []types.Song, currentSong int) {
@@ -93,7 +106,7 @@ func displayNextSongs(playlist []types.Song, currentSong int) {
 			}
 		}
 		moveCursor(pos{2, (maxY / 4) + j})
-		color.Blue("%s", stripString(playlist[next].Name))
+		color.Blue(stripString(playlist[next].Name))
 	}
 
 }

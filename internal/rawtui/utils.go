@@ -1,31 +1,17 @@
-package app
+package rawtui
 
 import (
 	"fmt"
 	"log"
 	"math/rand"
 	"os"
-	"os/signal"
 	"path/filepath"
 
-	c "github.com/axyut/playgo/internal/config"
 	"github.com/axyut/playgo/internal/types"
-	"github.com/axyut/playgo/pkg/tui"
 	"github.com/mattn/go-tty"
-
-	"github.com/ebitengine/oto/v3"
-	// keypress listener
 )
 
 var Notifications []string
-
-// Prepare an Oto context (creating context for single time)
-var op = &oto.NewContextOptions{
-	SampleRate:   44100,
-	ChannelCount: 2,
-	Format:       oto.FormatSignedInt16LE,
-}
-var otoCtx, readyChan, otoErr = oto.NewContext(op)
 
 // var playlist []string
 var playedList []string
@@ -34,26 +20,6 @@ var playlist = types.Playlist{}
 // var favorites []string
 // var timer int
 var completedPlaylist int
-
-//type pos [2]int
-
-type Player struct {
-	Music   *oto.Player
-	setting *c.Config
-	File    *os.File
-	Song    int
-}
-
-var songs = c.Activelist{
-	PrevSong:    -1,
-	CurrentSong: 0,
-	NextSong:    1,
-}
-
-// var flags = c.Flag{
-// 	Help: "h",
-// 	Test: "t",
-// }
 
 func shufflePlaylist(playlist *types.Playlist) {
 	list := playlist.List
@@ -74,11 +40,10 @@ func addFolder(path string) (*types.Playlist, error) {
 	if path == "." {
 		path, _ = filepath.Abs(path)
 	}
-	fmt.Println("Adding Folder", path)
 	fileInfos, err := os.ReadDir(path)
 	if err != nil {
 		log.Println("Couldn't Read from ", path, " Directory!")
-		return &playlist, err
+		// return &playlist, err
 	}
 	for _, file := range fileInfos {
 		ext := filepath.Ext(file.Name())
@@ -96,31 +61,18 @@ func addFolder(path string) (*types.Playlist, error) {
 	musicPath := filepath.Join(home + "/Music/")
 	// fmt.Println("Music Path: ", musicPath)
 	if len(playlist.List) == 0 && path == musicPath {
-		fmt.Println(c.Usage)
+		fmt.Println(types.Usage)
 		os.Exit(0)
 	} else if len(playlist.List) == 0 {
 		fmt.Println("No Music Files Found in the given path:", path, "Trying ~/Music/")
 		addFolder(musicPath)
 	}
+	// fmt.Println("Adding ", playlist.List)
 	// os.Exit(0)
 	return &playlist, nil
 }
 
-func handleInterrupt(ui *tui.TUI, playedList []string, completedPlaylist int) {
-	tui.HideCursor()
-
-	// handle CTRL C
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-
-	go func() {
-		for range c {
-			ui.DisplayStats(playedList, completedPlaylist)
-		}
-	}()
-}
-
-func listenForKey(setting c.Config) {
+func listenForKey(setting types.Config) {
 	tty, err := tty.Open()
 	if err != nil {
 		panic(err)
@@ -160,7 +112,7 @@ func listenForKey(setting c.Config) {
 	}
 }
 
-func toogleSetting(str rune, list *types.Playlist, setting *c.Config) {
+func toogleSetting(str rune, list *types.Playlist, setting *types.Config) {
 	suf, repS, repP := setting.Music.Shuffle, setting.Music.RepeatSong, setting.Music.RepeatPlaylist
 	switch str {
 	case 't':
@@ -211,25 +163,22 @@ func notify(str string) {
 	Notifications = append([]string{str}, Notifications...)
 }
 
-func getSong(i int, playlist *types.Playlist, setting c.Config) *c.Activelist {
-	var prevSong, curSong, nextSong int
-	prevSong = i - 1
-	curSong = i
-	if len(playlist.List) == i+1 {
-		nextSong = i
-		if setting.Music.RepeatPlaylist {
-			nextSong = 0
-		}
-	} else {
-		nextSong = i + 1
-	}
-	songs = c.Activelist{
-		PrevSong:    prevSong,
-		CurrentSong: curSong,
-		NextSong:    nextSong,
-	}
-	return &songs
-}
+// func getSong(i int, playlist *types.Playlist, setting types.Config) {
+// 	var prevSong, curSong, nextSong int
+// 	prevSong = i - 1
+// 	curSong = i
+// 	if len(playlist.List) == i+1 {
+// 		nextSong = i
+// 		if setting.Music.RepeatPlaylist {
+// 			nextSong = 0
+// 		}
+// 	} else {
+// 		nextSong = i + 1
+// 	}
+// 	playlist.CurrentSong = curSong
+// 	playlist.NextSong = nextSong
+// 	playlist.PrevSong = prevSong
+// }
 
 func appendOnlyOriginal(list []string, val string) (originalList []string) {
 	for _, v := range list {
