@@ -82,11 +82,15 @@ func AddFolder(playlist *Playlist, path string) (*Playlist, error) {
 	musicPath := filepath.Join(home + "/Music/")
 	// fmt.Println("Music Path: ", musicPath)
 	if len(playlist.List) == 0 && path == musicPath {
-		fmt.Println(types.Usage)
+		fmt.Println("No Music Files Found in the given path: ", path)
 		os.Exit(0)
 	} else if len(playlist.List) == 0 {
 		fmt.Println("No Music Files Found in the given path:", path, "Trying ~/Music/")
-		AddFolder(playlist, musicPath)
+		_, err := AddFolder(playlist, musicPath)
+		if err != nil {
+			log.Println("Couldn't Read from ~/Music/ Directory!")
+			return playlist, err
+		}
 	}
 	// fmt.Println("Adding ", playlist.List)
 	// os.Exit(0)

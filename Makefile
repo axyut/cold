@@ -31,9 +31,9 @@ install:
 	@go mod tidy
 
 lint:
-	golangci-lint run
+	@golangci-lint run
 
-git:# make git m="your message"
+git: lint test # make git m="your message"
 	git add .
 	git commit -m "$(m)"
 	git push

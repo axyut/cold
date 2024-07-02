@@ -38,9 +38,12 @@ func render() {
 }
 
 func termSize() (width int, height int) {
-	width, height, err := term.GetSize(int(os.Stdout.Fd()))
-	if err != nil {
-		panic(err)
+	var err error
+	if term.IsTerminal(int(os.Stdout.Fd())) {
+		width, height, err = term.GetSize(int(os.Stdout.Fd()))
+		if err != nil {
+			panic(err)
+		}
 	}
 	return width, height
 }

@@ -78,7 +78,6 @@ func keysWithAction(playlist *list.Playlist, setting *types.Config, player *play
 		{
 			Key: 'e',
 			Action: func() {
-				player.Music.Seek(10, 0)
 				notify(">> 10s")
 			},
 		},
