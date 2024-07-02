@@ -20,11 +20,11 @@ Play Music in terminal. Written in Go. Relatively feature-packed.
 ### Requirements
 
 -   [Go](https://golang.org/)
--   Windows `go`
--   Debian `go libasound2-dev`
+-   Windows
+-   Debian `libasound2-dev`
 -   Mac
 -   Arch
--   Fedora
+-   Fedora `alsa-lib-devel`
 
 ## Installation
 
@@ -59,6 +59,7 @@ curl ...install.sh
 ## Themes
 
 -   [ ] UI with [bubbletea](https://github.com/charmbracelet/bubbletea)
+-   [ ] Tview(https://github.com/rivo/tview)
 -   [x] Raw UI Build
 
 ## Audio Engine
@@ -78,30 +79,7 @@ curl ...install.sh
 
 ## Usage
 
-```plaintext
-## flags
-  play files                  - $playgo <file.mp3> <file2.mp3>
-  play all music in folder    - $playgo / $playgo . / $playgo ~/Music/path
-  help                        - $playgo -h
-  test condition/health       - $playgo -t
-## while playing
-  q - quit player
-  p - Play/Pause
-
-  h - play previous song
-  j - seek backward 10s
-  k - seek forward 10s
-  l - play next song
-
-  w - Increase Volume by 5%
-  a -
-  s - Decrease Volume by 5%
-  d -
-
-  e - Toogle Repeat Playlist On/Off
-  r - Toogle Repeat Song On/Off
-  t - Toogle Shuffle On/Off
-```
+`playgo -h`
 
 ## Configuration
 
@@ -115,30 +93,51 @@ A config file will be generated when you first run `playgo`. Depending on your o
 It will include the following default settings:
 
 ```yml
-setting:
-    general:
-        show_icons: true
-    player:
-        shuffle: true
-        repeat_playlist: true
-    music:
-        repeat_song: false
-theme:
-    raw: true
+general:
+    start_dir: /home/user/Music/score/
+    enable_logging: true
+player:
+    shuffle: true
+    repeat_playlist: true
+music:
+    repeat_song: false
+    repeat_playlist: true
+    shuffle: true
+renderer: tea # tea, tview, raw
+user:
+    use_db: false
+temp:
+    start_dir: ""
+    show_icons: false
+    show_hidden: false
+    exclude: []
+    playonly: []
+    include: []
+    renderer: ""
+    enable_logging: false
 ```
 
 ## Uninstalling
 
 If installed with `go install` remove bin file from your go bin path. If not setup, by default it is in `~/go/bin`, If installed with curl ...
 
-<!-- imp
+### IMP Links
+
+[similar project](https://github.com/issadarkthing/gomu)
+[similar in rust](https://github.com/tramhao/termusic)
 [project structure](https://github.com/golang-standards/project-layout/blob/master/test/README.md)
 [github actions trigger](https://github.com/termkit/gama?tab=readme-ov-file)
 [commands parser](https://github.com/alecthomas/kingpin)
 [go releaser](https://github.com/wangyoucao577/go-release-action)
-setup go build command with test mp3 files
+[radio example](https://github.com/vergonha/garden-tui)
+[tui vis example](github.com/maaslalani/confetty)
+[gstreamer](https://github.com/go-gst/go-gst)
+[oto wrapper](github.com/faiface/beep)
 
+<!--
 git tag v0.1.1
 git push origin v0.1.1
+
+only for first time
 GOPROXY=proxy.golang.org go list -m github.com/axyut/playgo@v0.1.1
 -->

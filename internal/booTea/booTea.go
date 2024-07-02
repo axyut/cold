@@ -67,7 +67,7 @@ func (m model) View() string {
 	return str
 }
 
-func RunBubbleTUI(config types.Config) {
+func RunBubbleTUI(config *types.Config) {
 	p := tea.NewProgram(initialModel())
 	if _, err := p.Run(); err != nil {
 		fmt.Println(err)

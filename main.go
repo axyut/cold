@@ -7,3 +7,6 @@ import (
 func main() {
 	cmd.Execute()
 }
+
+// todo:
+// write tests

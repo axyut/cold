@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/axyut/playgo/internal/list"
 	"github.com/axyut/playgo/internal/types"
 	mp3 "github.com/axyut/playgo/pkg/mp3Decoder"
 	"github.com/ebitengine/oto/v3"
@@ -14,7 +15,7 @@ type Player struct {
 	Music    *oto.Player
 	Config   *types.Config
 	File     *os.File
-	Playlist *types.Playlist
+	Playlist *list.Playlist
 }
 
 // Prepare an Oto context (creating context for single time)
@@ -26,7 +27,7 @@ var op = &oto.NewContextOptions{
 var otoCtx, readyChan, otoErr = oto.NewContext(op)
 
 // seek, next , prevous, pause, play, settings
-func NewPlayer(playlist *types.Playlist, cfg *types.Config) *Player {
+func NewPlayer(playlist *list.Playlist, cfg *types.Config) *Player {
 	// fmt.Println("NewPlayer", playlist)
 	musicFile := playlist.List[playlist.CurrentSong]
 	path := filepath.Join(musicFile.Path, musicFile.Name)
@@ -59,4 +60,9 @@ func NewPlayer(playlist *types.Playlist, cfg *types.Config) *Player {
 	}
 	newPlayer.Music.Play()
 	return newPlayer
+}
+
+func (player *Player) Pause() error {
+	player.Music.Pause()
+	return nil
 }

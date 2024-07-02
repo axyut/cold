@@ -6,17 +6,21 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/axyut/playgo/internal/list"
 	"github.com/axyut/playgo/internal/types"
+	"github.com/mattn/go-tty"
 )
 
+const REFRESH_RATE = time.Millisecond * 200
+
 type TUI struct {
-	Playlist *types.Playlist
+	Playlist *list.Playlist
 	Notifs   *[]string
 	Songs    *types.Activelist
 	Setting  *types.Config
 }
 
-func NewUI(playlist *types.Playlist, notifs *[]string, setting *types.Config) *TUI {
+func NewUI(playlist *list.Playlist, notifs *[]string, setting *types.Config) *TUI {
 	return &TUI{
 		Playlist: playlist,
 		Notifs:   notifs,
@@ -27,30 +31,33 @@ func NewUI(playlist *types.Playlist, notifs *[]string, setting *types.Config) *T
 var maxX, maxY = termSize()
 
 func (tui TUI) Display() {
-	music := tui.Setting.Music
-	for {
-		playlist := (*tui.Playlist).List
-		notifs := *tui.Notifs
-		currentSong := tui.Playlist.CurrentSong
-		Shuffle := music.Shuffle
-		RepeatSong := music.RepeatSong
-		RepeatPlaylist := music.RepeatPlaylist
+	go func() {
+		for {
+			music := tui.Setting.Music
+			playlist := (*tui.Playlist).List
+			notifs := *tui.Notifs
+			currentSong := tui.Playlist.CurrentSong
+			Shuffle := music.Shuffle
+			RepeatSong := music.RepeatSong
+			RepeatPlaylist := music.RepeatPlaylist
 
-		clear()
-		HideCursor()
-		// border()
-		seprator()
+			clear()
+			HideCursor()
+			// border()
+			seprator()
 
-		currentlyPlaying(playlist, currentSong)
-		displayPrevSongs(playlist, currentSong)
-		displayNextSongs(playlist, currentSong)
-		displaySettings(Shuffle, RepeatSong, RepeatPlaylist)
-		displayNowPlaying(playlist, currentSong)
-		displayNotifications(notifs)
+			currentlyPlaying(playlist, currentSong)
+			displayPrevSongs(playlist, currentSong)
+			displayNextSongs(playlist, currentSong)
+			displaySettings(Shuffle, RepeatSong, RepeatPlaylist)
+			displayNowPlaying(playlist, currentSong)
+			displayNotifications(notifs)
 
-		render()
-		time.Sleep(time.Millisecond * 200)
-	}
+			render()
+			time.Sleep(REFRESH_RATE)
+		}
+	}()
+
 }
 
 func (ui TUI) HandleInterrupt(playedList []string, completedPlaylist int) {
@@ -63,6 +70,32 @@ func (ui TUI) HandleInterrupt(playedList []string, completedPlaylist int) {
 	go func() {
 		for range c {
 			ui.DisplayStats(playedList, completedPlaylist)
+		}
+	}()
+}
+
+type ListenKeyAndAction struct {
+	Key    rune
+	Action func()
+}
+
+func (ui TUI) ListenForKey(listenKeys []ListenKeyAndAction) {
+	go func() {
+		tty, err := tty.Open()
+		if err != nil {
+			panic(err)
+		}
+
+		for {
+
+			if char, err := tty.ReadRune(); err == nil {
+				for _, keyAction := range listenKeys {
+					switch char {
+					case keyAction.Key:
+						keyAction.Action()
+					}
+				}
+			}
 		}
 	}()
 }

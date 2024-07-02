@@ -2,31 +2,30 @@ package rawtui
 
 import (
 	"fmt"
-	"log"
 	"time"
 
+	"github.com/axyut/playgo/internal/list"
 	"github.com/axyut/playgo/internal/player"
 	"github.com/axyut/playgo/internal/types"
 	"github.com/axyut/playgo/pkg/raw"
 )
 
-func StartRawTui(cfg types.Config) {
-	handleConfig(cfg)
-	go listenForKey(cfg)
-	ui := raw.NewUI(&playlist, &Notifications, &cfg)
+func StartRawTui(cfg *types.Config) {
+	playlist := list.NewPlaylist(cfg)
+	ui := raw.NewUI(playlist, &Notifications, cfg)
 	ui.HandleInterrupt(playedList, completedPlaylist)
-
 top:
 	for i := 0; ; i++ {
 	repeatSameSong:
 		// getSong(i, &playlist, cfg)
 		playlist.CurrentSong = i
-		player := player.NewPlayer(&playlist, &cfg)
+		player := player.NewPlayer(playlist, cfg)
 		if player == nil {
 			continue
 		}
 
-		go ui.Display()
+		ui.ListenForKey(keysWithAction(playlist, cfg, player))
+		ui.Display()
 
 		for player.Music.IsPlaying() {
 			time.Sleep(time.Millisecond)
@@ -61,23 +60,104 @@ top:
 	ui.DisplayStats(playedList, completedPlaylist)
 }
 
-func handleConfig(config types.Config) {
+func keysWithAction(playlist *list.Playlist, setting *types.Config, player *player.Player) []raw.ListenKeyAndAction {
 
-	playlist, err := addFolder(config.General.StartDir)
-	if err != nil {
-		log.Default().Println(err)
-	}
-	if len(config.Temp.Exclude) != 0 {
-		playlist = excludeFiles(playlist, config.Temp.Exclude)
-	}
-	if len(config.Temp.Include) != 0 {
-		playlist = includeFiles(playlist, config.Temp.Include)
-	}
-	if len(config.Temp.PlayOnly) != 0 {
-		playlist = addFiles(config.Temp.PlayOnly)
+	return []raw.ListenKeyAndAction{
+		{
+			Key: 'a',
+			Action: func() {
+				notify("<< Previous")
+			},
+		},
+		{
+			Key: 'q',
+			Action: func() {
+				notify("<< 10s ")
+			},
+		},
+		{
+			Key: 'e',
+			Action: func() {
+				player.Music.Seek(10, 0)
+				notify(">> 10s")
+			},
+		},
+		{
+			Key: 'd',
+			Action: func() {
+				player.Music.Close()
+				notify(">> Next")
+			},
+		},
+		{
+			Key: 'p',
+			Action: func() {
+				if player.Music.IsPlaying() {
+					player.Music.Pause()
+					notify("|> Paused")
+				} else {
+					player.Music.Play()
+					notify("|| Playing")
+				}
+			},
+		},
+		{
+			Key: 'w',
+			Action: func() {
+				notify("++ VOL")
+			},
+		},
+		{
+			Key: 's',
+			Action: func() {
+				notify("-- VOL")
+			},
+		},
+		{
+			Key: 'y',
+			Action: func() {
+				toogleSetting('y', playlist, setting)
+			},
+		},
+		{
+			Key: 't',
+			Action: func() {
+				toogleSetting('t', playlist, setting)
+			},
+		},
+		{
+			Key: 'r',
+			Action: func() {
+				toogleSetting('r', playlist, setting)
+			},
+		},
 	}
 
-	if config.Music.Shuffle {
-		shufflePlaylist(playlist)
+}
+
+func toogleSetting(str rune, list *list.Playlist, setting *types.Config) {
+	suf, repS, repP := setting.Music.Shuffle, setting.Music.RepeatSong, setting.Music.RepeatPlaylist
+	switch str {
+	case 't':
+		repP = !repP
+	case 'r':
+		repS = !repS
+	case 'y':
+		// serialize
+		suf = !suf
+		if suf {
+			list.Shuffle()
+			notify("Shuffle On.")
+		} else {
+			err := list.Serialize(setting.General.StartDir)
+			if err != nil {
+				notify("Error in serializing.")
+			} else {
+				notify("Shuffle Off.")
+			}
+		}
 	}
+	setting.Music.Shuffle = suf
+	setting.Music.RepeatSong = repS
+	setting.Music.RepeatPlaylist = repP
 }

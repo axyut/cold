@@ -45,7 +45,7 @@ skip, and repeat songs.`,
 			log.Fatal(err)
 		}
 
-		app.StartApp(config)
+		app.StartApp(&config)
 	},
 	Example: `playgo # no commands defaults to config's start directory
 playgo . # if no audio files, defaults to ~/Music/

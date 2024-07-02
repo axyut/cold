@@ -6,7 +6,7 @@ import (
 	"github.com/axyut/playgo/internal/types"
 )
 
-func StartApp(config types.Config) {
+func StartApp(config *types.Config) {
 	// fmt.Println("Starting app with config: ", config)
 	if config.Renderer == "raw" {
 		rawtui.StartRawTui(config)
