@@ -13,7 +13,8 @@ build_arm:
 	GOOS=darwin GOARCH=arm64 go build -o bin/${NAME}-arm64-darwin-${VERSION} .
 	GOOS=windows GOARCH=arm64 go build -o bin/${NAME}-arm64-windows-${VERSION} .
 	GOOS=linux GOARCH=arm64 go build -o bin/${NAME}-arm64-linux-${VERSION} .
-
+# https://issueantenna.com/repo/ebitengine/oto/issues/238
+# https://stackoverflow.com/questions/51475992/cgo-cross-compiling-from-amd64linux-to-arm64linux
 clean:
 	rm -rf bin
 

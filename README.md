@@ -123,7 +123,8 @@ If installed with `go install` remove bin file from your go bin path. If not set
 
 ### IMP Links
 
-[similar project](https://github.com/issadarkthing/gomu)
+[similar in go, gomu](https://github.com/issadarkthing/gomu)
+[simlar in go, grump](https://github.com/dhulihan/grump)
 [similar in rust](https://github.com/tramhao/termusic)
 [project structure](https://github.com/golang-standards/project-layout/blob/master/test/README.md)
 [github actions trigger](https://github.com/termkit/gama?tab=readme-ov-file)
@@ -132,7 +133,7 @@ If installed with `go install` remove bin file from your go bin path. If not set
 [radio example](https://github.com/vergonha/garden-tui)
 [tui vis example](github.com/maaslalani/confetty)
 [gstreamer](https://github.com/go-gst/go-gst)
-[oto wrapper](github.com/faiface/beep)
+[oto wrapper](https://github.com/gopxl/beep)
 
 <!--
 git tag v0.1.1
