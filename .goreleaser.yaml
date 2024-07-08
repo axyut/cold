@@ -1,5 +1,5 @@
 version: 2
-project_name: PLAYGO
+project_name: playgo
 
 before:
   hooks:
@@ -16,7 +16,7 @@ builds:
     ignore:
       - goos: linux
         goarch: arm64
-    # ldflags: ""
+    ldflags: "-X github.com/axyut/playgo/cmd.Version={{ .Tag }}"
     # hooks :
     #   pre: apt install libasound2-dev
 

@@ -1,2 +1,60 @@
 #!/usr/bin/bash 
 echo "Updating playgo..."
+exit 1
+
+set -e
+
+if ! command -v unzip >/dev/null && ! command -v 7z >/dev/null; then
+	echo "Error: either unzip or 7z is required to install playgo (see: https://github.com/playgoland/playgo_install#either-unzip-or-7z-is-required )." 1>&2
+	exit 1
+fi
+
+if [ "$OS" = "Windows_NT" ]; then
+	target="x86_64-pc-windows-msvc"
+else
+	case $(uname -sm) in
+	"Darwin x86_64") target="x86_64-apple-darwin" ;;
+	"Darwin arm64") target="aarch64-apple-darwin" ;;
+	"Linux aarch64") target="aarch64-unknown-linux-gnu" ;;
+	*) target="x86_64-unknown-linux-gnu" ;;
+	esac
+fi
+
+if [ $# -eq 0 ]; then
+	playgo_uri="https://github.com/playgoland/playgo/releases/latest/download/playgo-${target}.zip"
+else
+	playgo_uri="https://github.com/playgoland/playgo/releases/download/${1}/playgo-${target}.zip"
+fi
+
+playgo_install="${playgo_INSTALL:-$HOME/.playgo}"
+bin_dir="$playgo_install/bin"
+exe="$bin_dir/playgo"
+
+if [ ! -d "$bin_dir" ]; then
+	mkdir -p "$bin_dir"
+fi
+
+curl --fail --location --progress-bar --output "$exe.zip" "$playgo_uri"
+if command -v unzip >/dev/null; then
+	unzip -d "$bin_dir" -o "$exe.zip"
+else
+	7z x -o"$bin_dir" -y "$exe.zip"
+fi
+chmod +x "$exe"
+rm "$exe.zip"
+
+echo "playgo was installed successfully to $exe"
+if command -v playgo >/dev/null; then
+	echo "Run 'playgo --help' to get started"
+else
+	case $SHELL in
+	/bin/zsh) shell_profile=".zshrc" ;;
+	*) shell_profile=".bashrc" ;;
+	esac
+	echo "Manually add the directory to your \$HOME/$shell_profile (or similar)"
+	echo "  export playgo_INSTALL=\"$playgo_install\""
+	echo "  export PATH=\"\$playgo_INSTALL/bin:\$PATH\""
+	echo "Run '$exe --help' to get started"
+fi
+echo
+echo "Stuck? Join our Discord https://discord.gg/playgo"

@@ -40,13 +40,14 @@ go install github.com/axyut/playgo@latest
 curl ...install.sh
 ```
 
-## Development
+## Build From Source
 
--   `go run . .` from the source
--   `GOOS=linux GOARCH=amd64 go build -o ~/go/bin/ .` build to your bin path.
--   `GOOS=linux GOARCH=amd64 go build . && sudo cp playgo /usr/local/bin/` build for the system.
-    -   `GOOS=darwin GOARCH=amd64` Mac
-    -   `GOOS=windows GOARCH=amd64` Windows
+-   `go` version 1.22
+-   `git clone https://github.com/axyut/playgo.git && cd playgo`
+-   `make install` for debian.
+-   `make build` or `make build_arm` for binary at `bin/`.
+-   `cp bin/[filename] ~/.local/bin/playgo `
+-   `playgo`
 
 ## Features
 

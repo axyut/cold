@@ -15,6 +15,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var Version = "dev-build"
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "playgo",
@@ -22,7 +24,7 @@ var rootCmd = &cobra.Command{
 	Long: `A CLI Music Player that plays mp3 files from a directory, defaults to the current directory,
 if not found any music files, plays from ~/Music/. It provides a simple interface to play, pause,
 skip, and repeat songs.`,
-	Version: "0.1.3",
+	Version: Version,
 	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// If logging is enabled, logs will be output to debug.log.
