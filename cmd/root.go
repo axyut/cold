@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
+	"runtime/debug"
 
 	"github.com/axyut/playgo/internal/app"
 	"github.com/axyut/playgo/internal/config"
@@ -24,7 +26,7 @@ var rootCmd = &cobra.Command{
 	Long: `A CLI Music Player that plays mp3 files from a directory, defaults to the current directory,
 if not found any music files, plays from ~/Music/. It provides a simple interface to play, pause,
 skip, and repeat songs.`,
-	Version: Version,
+	Version: getVersion(),
 	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// If logging is enabled, logs will be output to debug.log.
@@ -125,4 +127,23 @@ func getTempSettings(cmd *cobra.Command, args []string) *types.TempSetting {
 		Include:       include,
 		PlayOnly:      playOnly,
 	}
+}
+
+func getVersion() string {
+	var goVer string = runtime.Version()
+	if Version == "dev-build" {
+		if info, ok := debug.ReadBuildInfo(); ok {
+			Version = info.Main.Version
+			goVer = info.GoVersion
+			// fmt.Println(info)
+		}
+	}
+
+	return fmt.Sprintf(`%s Built with %s
+
+♪♫♫♫♪  ♫          ♪     ♪    ♪   ♪♫♫♪       ♪♫♫♫♪
+♫   ♫  ♫         ♪ ♪     ♪  ♪   ♫          ♫     ♫
+♫♫♫♪♪  ♫        ♪   ♪     ♪♪   ♫   ♪♫♫♫♪  ♫       ♫
+♫      ♫       ♪♪♪♪♪♪♪    ♪     ♫   ♫  ♫   ♫     ♫
+♫      ♫♪♪♪♪♪ ♪       ♪  ♪       ♪♫♫♪  ♪    ♪♫♫♫♪  .`, Version, goVer)
 }

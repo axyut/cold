@@ -2,7 +2,7 @@
 NAME = playgo
 OS = linux
 ARCH = amd64
-VERSION := $(shell git describe --tags --abbrev=0)
+VERSION := $(shell git describe --tags HEAD)
 
 build:
 	@GOOS=linux GOARCH=amd64 go build -o bin/${NAME}-amd64-linux-${VERSION} -ldflags "-X github.com/axyut/playgo/cmd.Version=${VERSION}" .
