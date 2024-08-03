@@ -10,3 +10,6 @@ func main() {
 
 // todo:
 // write tests
+
+// known bugs:
+// when installe dfrom `go install`, cold -v does not work, because ikd how it builds and how to intert ldflags there
