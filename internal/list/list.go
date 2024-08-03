@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/axyut/playgo/internal/types"
+	"github.com/axyut/cold/internal/types"
 )
 
 type Playlist struct {
@@ -49,7 +49,7 @@ func (playlist Playlist) Shuffle() {
 }
 
 func (playlist Playlist) Serialize(path string) error {
-	// just doing addFolder for now which doesn't cover when individual files opened in command $playgo a.mp3 b.mp3
+	// just doing addFolder for now which doesn't cover when individual files opened in command $cold a.mp3 b.mp3
 	if _, err := AddFolder(&playlist, path); err != nil {
 		return err
 	}

@@ -1,4 +1,4 @@
-module github.com/axyut/playgo
+module github.com/axyut/cold
 
 go 1.22
 

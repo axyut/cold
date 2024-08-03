@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/axyut/playgo/internal/rawtui"
+	"github.com/axyut/cold/internal/rawtui"
 )
 
 func TestFmtDuration(t *testing.T) {

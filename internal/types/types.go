@@ -66,10 +66,10 @@ type Flag struct {
 
 const Usage = `Usage
 ## flags
-play files                  - $playgo <file.mp3> <file2.mp3>
-play all music in folder    - $playgo / $playgo . / $playgo ~/Music/path
-help                        - $playgo -h
-test condition/health       - $playgo -t
+play files                  - $cold <file.mp3> <file2.mp3>
+play all music in folder    - $cold / $cold . / $cold ~/Music/path
+help                        - $cold -h
+test condition/health       - $cold -t
 ## while playing
 x - quit player
 p - Play/Pause

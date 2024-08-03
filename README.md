@@ -4,8 +4,8 @@
     CLI Music Player
   </p>
   <p align="center">
-    <a href="https://github.com/axyut/playgo/releases"><img src="https://img.shields.io/github/v/release/axyut/playgo" alt="Latest Release"></a>
-    <a href="https://pkg.go.dev/github.com/axyut/playgo#section-readme"><img src="https://godoc.org/github.com/golang/gddo?status.svg" alt="GoDoc"></a>
+    <a href="https://github.com/axyut/cold/releases"><img src="https://img.shields.io/github/v/release/axyut/cold" alt="Latest Release"></a>
+    <a href="https://pkg.go.dev/github.com/axyut/cold#section-readme"><img src="https://godoc.org/github.com/golang/gddo?status.svg" alt="GoDoc"></a>
   </p>
 </p>
 
@@ -13,7 +13,7 @@
   <img src="./assets/player.png" alt="default screenshot">
 </p>
 
-## About Playgo
+## About cold
 
 Play Music in terminal. Written in Go. Relatively feature-packed.
 
@@ -23,7 +23,7 @@ Play Music in terminal. Written in Go. Relatively feature-packed.
 -   Windows
 -   Debian `libasound2-dev`
 -   Mac
--   Arch
+-   Arch `alsa` `alsa-lib`
 -   Fedora `alsa-lib-devel`
 
 ## Installation
@@ -31,7 +31,7 @@ Play Music in terminal. Written in Go. Relatively feature-packed.
 ### Go
 
 ```bash
-go install github.com/axyut/playgo@latest
+go install github.com/axyut/cold@latest
 ```
 
 ### Curl
@@ -43,11 +43,11 @@ curl ...install.sh
 ## Build From Source
 
 -   `go` version 1.22
--   `git clone https://github.com/axyut/playgo.git && cd playgo`
+-   `git clone https://github.com/axyut/cold.git && cd cold`
 -   `make install` for debian.
 -   `make build` or `make build_arm` for binary at `bin/`.
--   `cp bin/[filename] ~/.local/bin/playgo `
--   `playgo`
+-   `cp bin/[filename] ~/.local/bin/cold `
+-   `cold`
 
 ## Features
 
@@ -80,16 +80,16 @@ curl ...install.sh
 
 ## Usage
 
-`playgo -h`
+`cold -h`
 
 ## Configuration
 
 About settings...
-A config file will be generated when you first run `playgo`. Depending on your operating system it can be found in one of the following locations:
+A config file will be generated when you first run `cold`. Depending on your operating system it can be found in one of the following locations:
 
--   macOS: ~/Library/Application\ Support/playgo/config.yml
--   Linux: ~/.config/playgo/config.yml
--   Windows: C:\Users\me\AppData\Roaming\playgo\config.yml
+-   macOS: ~/Library/Application\ Support/cold/config.yml
+-   Linux: ~/.config/cold/config.yml
+-   Windows: C:\Users\me\AppData\Roaming\cold\config.yml
 
 It will include the following default settings:
 
@@ -141,5 +141,5 @@ git tag v0.1.1
 git push origin v0.1.1
 
 only for first time
-GOPROXY=proxy.golang.org go list -m github.com/axyut/playgo@v0.1.1
+GOPROXY=proxy.golang.org go list -m github.com/axyut/cold@v0.1.1
 -->

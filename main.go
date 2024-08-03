@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/axyut/playgo/cmd"
+	"github.com/axyut/cold/cmd"
 )
 
 func main() {

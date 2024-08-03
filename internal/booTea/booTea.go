@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/axyut/playgo/internal/types"
+	"github.com/axyut/cold/internal/types"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"

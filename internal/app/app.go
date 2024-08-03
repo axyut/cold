@@ -1,9 +1,9 @@
 package app
 
 import (
-	"github.com/axyut/playgo/internal/booTea"
-	"github.com/axyut/playgo/internal/rawtui"
-	"github.com/axyut/playgo/internal/types"
+	"github.com/axyut/cold/internal/booTea"
+	"github.com/axyut/cold/internal/rawtui"
+	"github.com/axyut/cold/internal/types"
 )
 
 func StartApp(config *types.Config) {

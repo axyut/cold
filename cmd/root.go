@@ -8,11 +8,10 @@ import (
 	"log"
 	"os"
 	"runtime"
-	"runtime/debug"
 
-	"github.com/axyut/playgo/internal/app"
-	"github.com/axyut/playgo/internal/config"
-	"github.com/axyut/playgo/internal/types"
+	"github.com/axyut/cold/internal/app"
+	"github.com/axyut/cold/internal/config"
+	"github.com/axyut/cold/internal/types"
 
 	"github.com/spf13/cobra"
 )
@@ -21,7 +20,7 @@ var Version = "dev-build"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "playgo",
+	Use:   "cold",
 	Short: "A CLI Music Player",
 	Long: `A CLI Music Player that plays mp3 files from a directory, defaults to the current directory,
 if not found any music files, plays from ~/Music/. It provides a simple interface to play, pause,
@@ -51,9 +50,9 @@ skip, and repeat songs.`,
 
 		app.StartApp(&config)
 	},
-	Example: `playgo # no commands defaults to config's start directory
-playgo . # if no audio files, defaults to ~/Music/
-playgo ~/Music -e a.mp3 -e b.mp3`,
+	Example: `cold # no commands defaults to config's start directory
+cold . # if no audio files, defaults to ~/Music/
+cold ~/Music -e a.mp3 -e b.mp3`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -131,13 +130,6 @@ func getTempSettings(cmd *cobra.Command, args []string) *types.TempSetting {
 
 func getVersion() string {
 	var goVer string = runtime.Version()
-	if Version == "dev-build" {
-		if info, ok := debug.ReadBuildInfo(); ok {
-			Version = info.Main.Version
-			goVer = info.GoVersion
-			// fmt.Println(info)
-		}
-	}
 
 	return fmt.Sprintf(`%s Built with %s
 

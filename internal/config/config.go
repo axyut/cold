@@ -4,11 +4,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/axyut/playgo/internal/types"
+	"github.com/axyut/cold/internal/types"
 	"gopkg.in/yaml.v3"
 )
 
-const AppDir = "playgo"
+const AppDir = "cold"
 const ConfigFileName = "config.yml"
 
 // configError represents an error that occurred while parsing the config file.
@@ -148,7 +148,7 @@ func (parser ConfigParser) getDefaultConfig() types.Config {
 			RepeatPlaylist: true,
 			Shuffle:        true,
 		},
-		Renderer: "tea",
+		Renderer: "raw",
 		User: types.UserSetting{
 			UseDB: false,
 		},

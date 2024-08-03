@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/axyut/playgo/internal/list"
-	"github.com/axyut/playgo/internal/types"
-	mp3 "github.com/axyut/playgo/pkg/mp3Decoder"
+	"github.com/axyut/cold/internal/list"
+	"github.com/axyut/cold/internal/types"
+	mp3 "github.com/axyut/cold/pkg/mp3Decoder"
 	"github.com/ebitengine/oto/v3"
 )
 

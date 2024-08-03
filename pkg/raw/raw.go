@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/axyut/playgo/internal/list"
-	"github.com/axyut/playgo/internal/types"
+	"github.com/axyut/cold/internal/list"
+	"github.com/axyut/cold/internal/types"
 	"github.com/mattn/go-tty"
 )
 

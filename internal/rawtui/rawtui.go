@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/axyut/playgo/internal/list"
-	"github.com/axyut/playgo/internal/player"
-	"github.com/axyut/playgo/internal/types"
-	"github.com/axyut/playgo/pkg/raw"
+	"github.com/axyut/cold/internal/list"
+	"github.com/axyut/cold/internal/player"
+	"github.com/axyut/cold/internal/types"
+	"github.com/axyut/cold/pkg/raw"
 )
 
 func StartRawTui(cfg *types.Config) {
