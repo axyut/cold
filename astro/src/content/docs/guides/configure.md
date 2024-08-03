@@ -1,16 +1,16 @@
 ---
 title: Configure
-description: A guide to Install and Configure Playgo.
+description: A guide to Install and Configure cold.
 ---
 
 Configure the player according to your needs on Linux, Windows and Mac.
 
 About settings...
-A config file will be generated when you first run `playgo`. Depending on your operating system it can be found in one of the following locations:
+A config file will be generated when you first run `cold`. Depending on your operating system it can be found in one of the following locations:
 
--   macOS: `~/Library/Application\ Support/playgo/config.yml`
--   Linux: `~/.config/playgo/config.yml`
--   Windows: `C:\Users\me\AppData\Roaming\playgo\config.yml`
+-   macOS: `~/Library/Application\ Support/cold/config.yml`
+-   Linux: `~/.config/cold/config.yml`
+-   Windows: `C:\Users\me\AppData\Roaming\cold\config.yml`
 
 It will include the following default settings:
 
@@ -29,4 +29,4 @@ theme:
 
 ## Further reading
 
--   Read [reference](/playgo/reference/example) and Examples.
+-   Read [reference](/cold/reference/example) and Examples.

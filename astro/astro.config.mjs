@@ -4,16 +4,16 @@ import starlight from "@astrojs/starlight";
 // https://astro.build/config
 export default defineConfig({
     site: "https://axyut.github.io",
-    base: "/playgo",
+    base: "/cold",
     integrations: [
         starlight({
             favicon: "./src/assets/logo.png",
-            title: "Playgo",
+            title: "cold",
             logo: {
                 src: "./src/assets/logo.png",
             },
             social: {
-                github: "https://github.com/axyut/playgo",
+                github: "https://github.com/axyut/cold",
             },
             sidebar: [
                 {

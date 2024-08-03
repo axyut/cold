@@ -7,4 +7,4 @@ Building...
 
 ## Further reading
 
--   Visit [github](https://github.com/axyut/playgo/).
+-   Visit [github](https://github.com/axyut/cold/).
