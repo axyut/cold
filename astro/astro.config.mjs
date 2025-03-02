@@ -7,7 +7,8 @@ export default defineConfig({
   base: "",
   integrations: [
     starlight({
-      prerender: false,
+      // true requires SSR adapter
+      // prerender: false,
       favicon: "./src/assets/logo.png",
       title: "cold",
       logo: {
