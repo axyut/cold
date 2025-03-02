@@ -3,7 +3,7 @@ import starlight from "@astrojs/starlight";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://cold.axyut.me",
+  site: "https://achyutkoirala.com.np/cold",
   base: "",
   integrations: [
     starlight({
