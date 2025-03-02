@@ -1,1 +1,1 @@
-### astro for static docs
+## astro for static docs
