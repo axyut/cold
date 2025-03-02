@@ -1,33 +1,32 @@
 ---
 import Icon from './user-components/Icon.astro';
-import type { Props } from '@astrojs/starlight/props';
+const { dir, pagination} = Astro.locals.starlightRoute;
 
-const { dir, labels, pagination } = Astro.props;
-const { prev, next } = pagination;
+// const { prev, next } = pagination;
 const isRtl = dir === 'rtl';
 ---
 
 <div class="pagination-links" dir={dir}>
 	{
-		prev && (
-			<a class="pagination" href={prev.href} rel="prev">
+		pagination?.prev && (
+			<a class="pagination" href={pagination.prev.href} rel="pagination.prev">
 				<Icon name={isRtl ? 'right-arrow' : 'left-arrow'} size="1.5rem" />
 				<span>
-					{labels['page.previousLink']}
+					{pagination.prev.label}
 					<br />
-					<span class="link-title">{prev.label}</span>
+					{/* <span class="link-title">{pagination.prev.label}</span> */}
 				</span>
 			</a>
 		)
 	}
 	{
-		next && (
-			<a class="pagination" href={next.href} rel="next">
+		pagination?.next && (
+			<a class="pagination" href={pagination.next.href} rel="pagination.next">
 				<Icon name={isRtl ? 'left-arrow' : 'right-arrow'} size="1.5rem" />
 				<span>
-					{labels['page.nextLink']}
+					{pagination.next.label}
 					<br />
-					<span class="link-title">{next.label}</span>
+					{/* <span class="link-title">{pagination.next.label}</span> */}
 				</span>
 			</a>
 		)
@@ -91,7 +90,7 @@ const isRtl = dir === 'rtl';
 		height: var(--sl-icon-size);
 	}
 
-	[rel='next'] {
+	[rel='pagination.next'] {
 		justify-content: end;
 		text-align: end;
 		flex-direction: row-reverse;
