@@ -3,8 +3,8 @@ import starlight from "@astrojs/starlight";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://achyutkoirala.com.np/cold",
-  base: "",
+  site: "https://axyut.github.io",
+  base: "/cold",
   integrations: [
     starlight({
       // true requires SSR adapter
