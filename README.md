@@ -1,7 +1,7 @@
 <p align="center">
   <img src="./assets/logo.png" height="70" width="90" />
   <p align="center">
-    CLI Music Player
+    CLI Music Player🎵 
   </p>
   <p align="center">
     <a href="https://github.com/axyut/cold/releases"><img src="https://img.shields.io/github/v/release/axyut/cold" alt="Latest Release"></a>
